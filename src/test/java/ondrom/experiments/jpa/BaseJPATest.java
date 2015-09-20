@@ -4,11 +4,12 @@ import java.text.DateFormat;
 import java.util.Locale;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 
 public abstract class BaseJPATest {
 
+    private static final String PU_NAME = "test";
+    
     private EntityManager em = null;
     
     protected static DateFormat dateTimeFormatter() {
@@ -17,7 +18,7 @@ public abstract class BaseJPATest {
 
     protected synchronized EntityManager getEM() {
         if (em == null) {
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("test");
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory(PU_NAME);
             em = emf.createEntityManager();
         }
         return em;
@@ -31,4 +32,16 @@ public abstract class BaseJPATest {
         getEM().getTransaction().commit();
     }
 
+    protected void given(Runnable whenRunnable) {
+        whenRunnable.run();
+    }
+    
+    protected void when(Runnable whenRunnable) {
+        whenRunnable.run();
+    }
+    
+    protected void then(Runnable whenRunnable) {
+        whenRunnable.run();
+    }
+    
 }
