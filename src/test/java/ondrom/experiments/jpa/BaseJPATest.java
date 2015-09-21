@@ -19,9 +19,17 @@ public abstract class BaseJPATest {
     protected synchronized EntityManager getEM() {
         if (em == null) {
             EntityManagerFactory emf = Persistence.createEntityManagerFactory(PU_NAME);
+            emf.getCache().evictAll();
             em = emf.createEntityManager();
         }
         return em;
+    }
+    
+    protected synchronized void reopenEM() {
+        if (em != null) {
+            em.close();
+        }
+        em = null;
     }
 
     protected void beginTx() {

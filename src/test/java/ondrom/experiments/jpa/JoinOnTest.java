@@ -1,11 +1,12 @@
 package ondrom.experiments.jpa;
 
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static ondrom.experiments.jpa.entitybuilders.PersonBuilder.*;
@@ -17,28 +18,33 @@ import org.junit.runner.RunWith;
 
 @RunWith(CdiRunner.class)
 @SupportDeltaspikeData
-public class QueryEmbeddedMapTest extends BaseJPATest {
+public class JoinOnTest extends BaseJPATest {
 
     @Inject
-    private LifeEventRepository lifeEventRepo;
+    private PersonRepository personRepo;
     
     @Test
     public void isQueryByEmbeddedObjectInMapWorkig() {
-        final String PLACE = "Praha";
-        final String KEY = "BIRTH";
+        final List<String> PLACES = Arrays.asList("Praha", "Nitra");
+        final String PERSON_NAME = "Ondro";
         given(() -> {
             // fill DB data
             beginTx();
+            Iterator<String> itPlaces = PLACES.iterator();
             aPerson()
-                .withLifeEvent(KEY, aLifeEvent()
-                    .withPlace(PLACE))
+                .withName(PERSON_NAME)
+                .withLifeEvent(aLifeEvent()
+                    .withPlace(itPlaces.next()))
+                .withLifeEvent(aLifeEvent()
+                    .withPlace(itPlaces.next()))
                 .existsIn(getEM());
             commitTx();
+            reopenEM();
         });
         then(() -> {
-            Person.FindAllLeByName QAttr = null;
-            List<LifeEvent> resultList = lifeEventRepo.findByPlaceAndHavingPerson(PLACE);
-            assertThat(resultList, not(empty()));
+            List<Person> resultList = personRepo.findByNameFilterLifeEventsByPlace(PERSON_NAME, PLACES.get(0));
+            assertThat(resultList, is(not(empty())));
+            assertThat(resultList.get(0).getLifeEventList(), is(iterableWithSize( 1 )));
         });
         
     }

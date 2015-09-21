@@ -5,11 +5,12 @@
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <mapping-file>META-INF/entityMapping.orm.xml</mapping-file>
     <properties>
-      <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
       <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
       <property name="javax.persistence.jdbc.url" value="jdbc:h2:/tmp/h2_test_db"/>
       <property name="javax.persistence.jdbc.user" value="sa"/>
       <property name="javax.persistence.jdbc.password" value=""/>
+      <property name="eclipselink.logging.level" value="FINE"/>
+      <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
     </properties>
   </persistence-unit>
   <persistence-unit name="test-in-memory" transaction-type="RESOURCE_LOCAL">
