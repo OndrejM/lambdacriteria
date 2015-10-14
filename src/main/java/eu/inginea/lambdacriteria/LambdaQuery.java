@@ -10,6 +10,7 @@ import com.trigersoft.jaque.expression.ParameterExpression;
 import com.trigersoft.jaque.expression.SimpleExpressionVisitor;
 import com.trigersoft.jaque.expression.UnaryExpression;
 import java.lang.reflect.Member;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -20,8 +21,9 @@ import ondrom.experiments.jpa.Person;
 public class LambdaQuery<T> {
 
     private EntityManager em;
-    Alias<?>[] roots;
-    Alias<?>[] selects;
+    private Alias<?>[] roots;
+    private Alias<?>[] selects;
+    private Condition whereCond;
 
     public LambdaQuery(EntityManager em) {
         this.em = em;
@@ -38,12 +40,7 @@ public class LambdaQuery<T> {
     }
 
     public LambdaQuery where(Condition e) {
-        LambdaExpression<Condition> parsed = LambdaExpression
-                .parse(e);
-        //parseExpressionManually(parsed);
-
-        parsed.accept(new WhereCriteriaVisitor());
-
+        this.whereCond = e;
         return this;
     }
 
@@ -66,7 +63,7 @@ public class LambdaQuery<T> {
     }
 
     
-    private class AliasInstance {
+    public static class AliasInstance {
         private Alias<?> alias;
         private Root<?> instance;
 
@@ -74,20 +71,34 @@ public class LambdaQuery<T> {
             this.alias = alias;
             this.instance = instance;
         }
+
+        public Alias<?> getAlias() {
+            return alias;
+        }
+
+        public Root<?> getInstance() {
+            return instance;
+        }
         
     }
     
     public List<T> getResultList() {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery q = cb.createQuery();
-        AliasInstance aliasInstance = null;
+
+        List<AliasInstance> aliasInstances = new ArrayList<>();
         for (Alias<?> alias : roots) {
-            aliasInstance = new AliasInstance(alias, q.from(alias.getEntityClass()));
-            // TODO support more aliases
+            aliasInstances.add(new AliasInstance(alias, q.from(alias.getEntityClass())));
         }
         
+        LambdaExpression<Condition> parsed = LambdaExpression.parse(whereCond);
+        WhereCriteriaVisitor whereCriteriaVisitor = new WhereCriteriaVisitor(cb, q, aliasInstances);
+        parsed.accept(whereCriteriaVisitor);
+        
+        // TODO support more aliases
+        AliasInstance aliasInstance = aliasInstances.get(0);
         Root<?> p = aliasInstance.instance;
-        q.select(p).where(cb.equal(p.get("name"), cb.parameter(String.class, "name")));
+        q.select(p).where(whereCriteriaVisitor.getJpaExpression());
         List<T> persons = em.createQuery(q)
                 .setParameter("name", "Ondro")
                 .getResultList();
