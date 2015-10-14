@@ -1,7 +1,9 @@
 package eu.inginea.lambdacriteria;
 
-public class Alias<T> {
+import java.io.Serializable;
+
+public class Alias<T> implements Serializable {
     
-    public T ref;
+    public T val;
 
 }

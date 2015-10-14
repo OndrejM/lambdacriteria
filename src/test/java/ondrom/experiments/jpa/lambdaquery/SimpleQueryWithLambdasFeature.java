@@ -68,10 +68,10 @@ public class SimpleQueryWithLambdasFeature extends BaseJPATest {
     @Test
     public void canQueryPersonByNameUsingLambdas() {
         Alias<Person> p = new Alias<>();
-        List<Person> persons = new LambdaQuery(getEM())
+        List<Person> persons = new LambdaQuery<Person>(getEM())
                 .select(p)
                 .from(p)
-                .where(() -> p.ref.getName() == "Ondro")
+                .where(() -> p.val.getName() == "Ondro")
                 .getResultList();
         assertThat("List of persons matching criteria", persons, is(not(empty())));
         assertThat("List of persons matching criteria", persons, is(iterableWithSize( 1 )));
