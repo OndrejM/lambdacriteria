@@ -67,7 +67,7 @@ public class SimpleQueryWithLambdasFeature extends BaseJPATest {
 
     @Test
     public void canQueryPersonByNameUsingLambdas() {
-        Alias<Person> p = new Alias<>();
+        Alias<Person> p = new Alias<>(Person.class);
         List<Person> persons = new LambdaQuery<Person>(getEM())
                 .select(p)
                 .from(p)

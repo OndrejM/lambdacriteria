@@ -12,27 +12,43 @@ import com.trigersoft.jaque.expression.UnaryExpression;
 import java.lang.reflect.Member;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import ondrom.experiments.jpa.Person;
 
 public class LambdaQuery<T> {
 
     private EntityManager em;
+    Alias<?>[] roots;
+    Alias<?>[] selects;
 
     public LambdaQuery(EntityManager em) {
         this.em = em;
     }
 
     public LambdaQuery select(Alias<?>... a) {
+        this.selects = a; // to be extended to support more than aliased entity in selection
         return this;
     }
 
-    public LambdaQuery from(Alias<?>... a) {
+    public LambdaQuery from(Alias<?>... rootAliases) {
+        this.roots = rootAliases;
         return this;
     }
 
     public LambdaQuery where(Condition e) {
         LambdaExpression<Condition> parsed = LambdaExpression
                 .parse(e);
+        //parseExpressionManually(parsed);
+
+        parsed.accept(new WhereCriteriaVisitor());
+
+        return this;
+    }
+
+    @Deprecated
+    private void parseExpressionManually(LambdaExpression<Condition> parsed) {
         Expression body = parsed.getBody();
         Expression methodCall = body;
 
@@ -47,66 +63,36 @@ public class LambdaQuery<T> {
 
         BinaryExpression binaryExpr = (BinaryExpression) lambdaBody.getFirst();
         Expression operator = binaryExpr.getOperator();
-
-        parsed.accept(new SimpleExpressionVisitor() {
-
-            @Override
-            public Expression visit(UnaryExpression e) {
-                info(e);
-                return super.visit(e); //To change body of generated methods, choose Tools | Templates.
-            }
-
-            @Override
-            public Expression visit(ParameterExpression e) {
-                info(e);
-                return super.visit(e); //To change body of generated methods, choose Tools | Templates.
-            }
-
-            @Override
-            public Expression visit(MemberExpression e) {
-                info(e);
-                return super.visit(e); //To change body of generated methods, choose Tools | Templates.
-            }
-
-            @Override
-            public Expression visit(LambdaExpression<?> e) {
-                info(e);
-                return super.visit(e); //To change body of generated methods, choose Tools | Templates.
-            }
-
-            @Override
-            public Expression visit(InvocationExpression e) {
-                info(e);
-                return super.visit(e); //To change body of generated methods, choose Tools | Templates.
-            }
-
-            @Override
-            public Expression visit(ConstantExpression e) {
-                info(e);
-                return super.visit(e); //To change body of generated methods, choose Tools | Templates.
-            }
-
-            @Override
-            public Expression visit(BinaryExpression e) {
-                info(e);
-                return super.visit(e); //To change body of generated methods, choose Tools | Templates.
-            }
-
-            private void info(Object loggedValue) {
-                if (loggedValue != null) {
-                    System.out.println("["+ loggedValue.getClass().getSimpleName() + "]: " + loggedValue);
-                } else {
-                    System.out.println(">>NULL<<");
-                }
-            }
-
-        });
-
-        return this;
     }
 
+    
+    private class AliasInstance {
+        private Alias<?> alias;
+        private Root<?> instance;
+
+        public AliasInstance(Alias<?> alias, Root<?> instance) {
+            this.alias = alias;
+            this.instance = instance;
+        }
+        
+    }
+    
     public List<T> getResultList() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery q = cb.createQuery();
+        AliasInstance aliasInstance = null;
+        for (Alias<?> alias : roots) {
+            aliasInstance = new AliasInstance(alias, q.from(alias.getEntityClass()));
+            // TODO support more aliases
+        }
+        
+        Root<?> p = aliasInstance.instance;
+        q.select(p).where(cb.equal(p.get("name"), cb.parameter(String.class, "name")));
+        List<T> persons = em.createQuery(q)
+                .setParameter("name", "Ondro")
+                .getResultList();
+        return persons;
     }
 
+    
 }
