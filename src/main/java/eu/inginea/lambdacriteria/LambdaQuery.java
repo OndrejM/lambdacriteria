@@ -1,23 +1,21 @@
 package eu.inginea.lambdacriteria;
 
 import com.trigersoft.jaque.expression.BinaryExpression;
-import com.trigersoft.jaque.expression.ConstantExpression;
 import com.trigersoft.jaque.expression.Expression;
 import com.trigersoft.jaque.expression.InvocationExpression;
 import com.trigersoft.jaque.expression.LambdaExpression;
-import com.trigersoft.jaque.expression.MemberExpression;
-import com.trigersoft.jaque.expression.ParameterExpression;
-import com.trigersoft.jaque.expression.SimpleExpressionVisitor;
 import com.trigersoft.jaque.expression.UnaryExpression;
-import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import ondrom.experiments.jpa.Person;
 
+/**
+ * Main object to build query
+ * @param <T> Type of query result
+ */
 public class LambdaQuery<T> {
 
     private EntityManager em;

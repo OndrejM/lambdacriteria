@@ -19,7 +19,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-public class WhereCriteriaVisitor extends SimpleExpressionVisitor {
+class WhereCriteriaVisitor extends SimpleExpressionVisitor {
 
     private CriteriaBuilder cb;
     private CriteriaQuery q;
