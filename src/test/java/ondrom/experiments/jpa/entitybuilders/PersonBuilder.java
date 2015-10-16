@@ -39,8 +39,13 @@ public class PersonBuilder extends EntityBuider {
         return person;
     }
 
-    public PersonBuilder withName(String ondro) {
-        person.setName(ondro);
+    public PersonBuilder withName(String name) {
+        person.setName(name);
+        return this;
+    }
+
+    public PersonBuilder withHairColor(String color) {
+        person.setHairColor(color);
         return this;
     }
     

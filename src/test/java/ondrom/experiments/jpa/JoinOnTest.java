@@ -18,7 +18,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(CdiRunner.class)
 @SupportDeltaspikeData
-public class JoinOnTest extends BaseJPATest {
+public class JoinOnTest extends JPATestBase {
 
     @Inject
     private PersonRepository personRepo;

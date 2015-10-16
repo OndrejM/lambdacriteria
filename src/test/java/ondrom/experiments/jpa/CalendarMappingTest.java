@@ -16,7 +16,7 @@ import org.junit.Test;
  *
  * @author ondro
  */
-public class CalendarMappingTest extends BaseJPATest {
+public class CalendarMappingTest extends JPATestBase {
 
     public CalendarMappingTest() {
     }

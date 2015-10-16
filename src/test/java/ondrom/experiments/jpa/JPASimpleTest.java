@@ -6,7 +6,7 @@ import org.junit.Test;
  *
  * @author ondro
  */
-public class JPASimpleTest extends BaseJPATest {
+public class JPASimpleTest extends JPATestBase {
 
     public JPASimpleTest() {
     }

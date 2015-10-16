@@ -27,6 +27,7 @@ public class Person {
     private long id;
     
     private String name;
+    private String hairColor;
     
     @ElementCollection
     @MapKeyColumn(name = "type")
@@ -57,6 +58,14 @@ public class Person {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getHairColor() {
+        return hairColor;
+    }
+
+    public void setHairColor(String hairColor) {
+        this.hairColor = hairColor;
     }
 
 }

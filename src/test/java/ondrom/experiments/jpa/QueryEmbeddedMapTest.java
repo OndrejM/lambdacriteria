@@ -17,7 +17,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(CdiRunner.class)
 @SupportDeltaspikeData
-public class QueryEmbeddedMapTest extends BaseJPATest {
+public class QueryEmbeddedMapTest extends JPATestBase {
 
     @Inject
     private LifeEventRepository lifeEventRepo;

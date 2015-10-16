@@ -6,7 +6,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-public abstract class BaseJPATest {
+public abstract class JPATestBase {
 
     private static final String PU_NAME = "test";
     
