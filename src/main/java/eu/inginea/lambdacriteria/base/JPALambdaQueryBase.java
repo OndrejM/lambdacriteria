@@ -9,29 +9,29 @@ import javax.persistence.criteria.CriteriaQuery;
 
 public abstract class JPALambdaQueryBase<T> {
     protected EntityManager em;
-    protected Alias<?>[] roots;
-    protected Alias<?>[] selects;
+    protected List<AliasInstance> roots = new ArrayList<>();
+    protected List<AliasInstance> selects = new ArrayList<>();
 
     public JPALambdaQueryBase(EntityManager em) {
         this.em = em;
     }
 
-    public JPALambdaQueryBase<T> select(Alias<?>... a) {
-        this.selects = a; // to be extended to support more than aliased entity in selection
+    public JPALambdaQueryBase<T> select(Alias<?> a) {
+        this.selects.add(new AliasInstance(a));
         return this;
     }
 
-    public JPALambdaQueryBase<T> from(Alias<?>... rootAliases) {
-        this.roots = rootAliases;
+    public JPALambdaQueryBase<T> from(Alias<?> root) {
+        this.roots.add(new AliasInstance(root));
         return this;
     }
 
-    protected List<LambdaQuery.AliasInstance> initAliasInstances(CriteriaQuery q) {
-        List<LambdaQuery.AliasInstance> aliasInstances = new ArrayList<>();
-        for (Alias<?> alias : roots) {
-            aliasInstances.add(new LambdaQuery.AliasInstance(alias, q.from(alias.getEntityClass())));
+    protected List<AliasInstance> initAliasInstances(CriteriaQuery q) {
+        for (AliasInstance root : roots) {
+            root.setInstance(q.from(root.getAlias().getEntityClass()));
         }
-        return aliasInstances;
+        ArrayList<AliasInstance> allAliases = new ArrayList<>(roots);
+        return allAliases;
     }
 
 }

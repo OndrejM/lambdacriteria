@@ -3,6 +3,7 @@ package ondrom.experiments.jpa.lambdaquery;
 import eu.inginea.lambdacriteria.alternative2.LambdaQuery2;
 import eu.inginea.lambdacriteria.Alias;
 import java.util.List;
+import ondrom.experiments.jpa.LifeEvent;
 import ondrom.experiments.jpa.Person;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -60,7 +61,7 @@ public class FeatureQueryWithLambdasAlternative2 extends QueryWithLambdasBase {
     @Test
     public void canQueryPersonByNameGroupByHairColor() {
         when(() -> {
-        Alias<String> p = new Alias<>(Person.class);
+            Alias<Person> p = new Alias<>(Person.class);
             colors = new LambdaQuery2<String>(getEM())
                 .select(p, pe -> pe.getHairColor())
                 .from(p)
@@ -85,8 +86,41 @@ public class FeatureQueryWithLambdasAlternative2 extends QueryWithLambdasBase {
         super.canQueryPersonByNameGroupByLifeEventPlaceUsingCriteria();
     }
     
-    
-    
-    
-    
+    @Test
+    public void canQueryPersonByNameGroupByLifeEventPlace() {
+        when(() -> {
+        Alias<Person> p = new Alias<>(Person.class);
+        Alias<LifeEvent> le = p.join(LifeEvent.class, (Person pe) -> pe.getLifeEventList());
+            colors = new LambdaQuery2<String>(getEM())
+                .select(le, (LifeEvent lee) -> lee.getPlace())
+                .from(p)
+                .where(p, pe -> "Ondro".equals(pe.getName()))
+                .groupBy(le, (LifeEvent lee) -> lee.getPlace())
+                .getResultList();
+        });
+        then(() -> {
+            isValidPersonByNameGroupByHairColor(colors);
+        });
+    }
+
+    @Test
+    public void canQueryPersonByNameGroupByLifeEventPlace2() {
+        when(() -> {
+            Alias<LifeEvent> le = new Alias<LifeEvent>();
+            colors = new LambdaQuery2<String>(getEM())
+                .select(le, (LifeEvent lee) -> lee.getPlace())
+                // alternatively
+                .select(le, LifeEvent::getPlace)
+                .from(Person.class)
+                .where(pe -> "Ondro".equals(pe.getName()))
+                .join(le, Person pe -> pe.getLifeEventList())
+                .groupBy(le, (LifeEvent lee) -> lee.getPlace())
+                    
+                .getResultList();
+        });
+        then(() -> {
+            isValidPersonByNameGroupByHairColor(colors);
+        });
+    }
+
 }

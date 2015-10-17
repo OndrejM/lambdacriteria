@@ -2,6 +2,7 @@ package eu.inginea.lambdacriteria.alternative2;
 
 import com.trigersoft.jaque.expression.LambdaExpression;
 import eu.inginea.lambdacriteria.Alias;
+import eu.inginea.lambdacriteria.base.AliasInstance;
 import eu.inginea.lambdacriteria.alternative1.Condition;
 import eu.inginea.lambdacriteria.base.JPALambdaQueryBase;
 import eu.inginea.lambdacriteria.alternative1.LambdaQuery;
@@ -40,7 +41,7 @@ public class LambdaQuery2<T> extends JPALambdaQueryBase<T> {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery q = cb.createQuery();
 
-        List<LambdaQuery.AliasInstance> aliasInstances = initAliasInstances(q);
+        List<AliasInstance> aliasInstances = initAliasInstances(q);
         
         LambdaExpression<Condition2> parsed = LambdaExpression.parse(whereCondition);
         

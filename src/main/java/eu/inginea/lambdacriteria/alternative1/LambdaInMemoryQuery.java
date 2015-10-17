@@ -46,13 +46,13 @@ public class LambdaInMemoryQuery<T> extends LambdaQuery<T> {
     }
 
     @Override
-    public LambdaInMemoryQuery<T> from(Alias<?>... rootAliases) {
-        super.from(rootAliases);
+    public LambdaInMemoryQuery<T> from(Alias<?> root) {
+        super.from(root);
         return this;
     }
 
     @Override
-    public LambdaInMemoryQuery<T> select(Alias<?>... a) {
+    public LambdaInMemoryQuery<T> select(Alias<?> a) {
         super.select(a);
         return this;
     }

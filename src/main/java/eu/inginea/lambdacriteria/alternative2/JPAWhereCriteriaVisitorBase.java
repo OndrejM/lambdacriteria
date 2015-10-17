@@ -4,6 +4,7 @@ import com.trigersoft.jaque.expression.BinaryExpression;
 import com.trigersoft.jaque.expression.ExpressionType;
 import com.trigersoft.jaque.expression.SimpleExpressionVisitor;
 import eu.inginea.lambdacriteria.Alias;
+import eu.inginea.lambdacriteria.base.AliasInstance;
 import eu.inginea.lambdacriteria.alternative1.LambdaQuery;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -17,13 +18,13 @@ import javax.persistence.criteria.Expression;
 public abstract class JPAWhereCriteriaVisitorBase extends SimpleExpressionVisitor {
     protected CriteriaBuilder cb;
     protected CriteriaQuery q;
-    protected Map<Alias, LambdaQuery.AliasInstance> aliases = new HashMap<>();
+    protected Map<Alias, AliasInstance> aliases = new HashMap<>();
     protected Expression jpaExpression;
 
-    public JPAWhereCriteriaVisitorBase(CriteriaBuilder cb, CriteriaQuery q, List<LambdaQuery.AliasInstance> aliasInstances) {
+    public JPAWhereCriteriaVisitorBase(CriteriaBuilder cb, CriteriaQuery q, List<AliasInstance> aliasInstances) {
         this.cb = cb;
         this.q = q;
-        for (LambdaQuery.AliasInstance aliasInstance : aliasInstances) {
+        for (AliasInstance aliasInstance : aliasInstances) {
             aliases.put(aliasInstance.getAlias(), aliasInstance);
         }
     }

@@ -1,5 +1,6 @@
 package eu.inginea.lambdacriteria.alternative1;
 
+import eu.inginea.lambdacriteria.base.AliasInstance;
 import com.trigersoft.jaque.expression.BinaryExpression;
 import com.trigersoft.jaque.expression.ConstantExpression;
 import com.trigersoft.jaque.expression.Expression;
@@ -11,6 +12,7 @@ import com.trigersoft.jaque.expression.ParameterExpression;
 import com.trigersoft.jaque.expression.SimpleExpressionVisitor;
 import com.trigersoft.jaque.expression.UnaryExpression;
 import eu.inginea.lambdacriteria.Alias;
+import eu.inginea.lambdacriteria.base.QueryExpressionVisitor;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,19 +22,19 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-class WhereCriteriaVisitor extends SimpleExpressionVisitor {
+class WhereCriteriaVisitor extends QueryExpressionVisitor {
 
     private CriteriaBuilder cb;
     private CriteriaQuery q;
-    private Map<Alias, LambdaQuery.AliasInstance> aliases = new HashMap<>();
+    private Map<Alias, AliasInstance> aliases = new HashMap<>();
     private javax.persistence.criteria.Expression jpaExpression;
     // processing invocation parameter with this index
     private Integer currentParameterIndex = null;
 
-    public WhereCriteriaVisitor(CriteriaBuilder cb, CriteriaQuery q, List<LambdaQuery.AliasInstance> aliasInstances) {
+    public WhereCriteriaVisitor(CriteriaBuilder cb, CriteriaQuery q, List<AliasInstance> aliasInstances) {
         this.cb = cb;
         this.q = q;
-        for (LambdaQuery.AliasInstance aliasInstance : aliasInstances) {
+        for (AliasInstance aliasInstance : aliasInstances) {
             aliases.put(aliasInstance.getAlias(), aliasInstance);
         }
     }
@@ -91,13 +93,31 @@ class WhereCriteriaVisitor extends SimpleExpressionVisitor {
     public Expression visit(ConstantExpression e) {
         Expression visitResult = super.visit(e); //To change body of generated methods, choose Tools | Templates.
         if (Alias.class.isAssignableFrom(e.getResultType())) {
-            LambdaQuery.AliasInstance aliasInstance = aliases.get(e.getValue());
+            AliasInstance aliasInstance = aliases.get(e.getValue());
             info("Alias instance: " + aliasInstance, true);
             info(e, true);
         } else {
             jpaExpression = cb.literal(e.getValue());
             info(e, true);
         }
+        return visitResult;
+    }
+
+    @Override
+    public Expression visit(BinaryExpression e) {
+        Expression visitResult = e;
+
+        Queue<javax.persistence.criteria.Expression> expressions = new LinkedList<>();
+        e.getFirst().accept(this);
+        expressions.add(jpaExpression);
+        e.getSecond().accept(this);
+        expressions.add(jpaExpression);
+        
+        switch (e.getExpressionType()) {
+            case ExpressionType.Equal:
+                jpaExpression = cb.equal(expressions.remove(), expressions.remove());
+        }
+        info(e, true);
         return visitResult;
     }
 
