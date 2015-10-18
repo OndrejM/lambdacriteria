@@ -12,13 +12,16 @@ import com.trigersoft.jaque.expression.ParameterExpression;
 import com.trigersoft.jaque.expression.UnaryExpression;
 import eu.inginea.lambdacriteria.Alias;
 import eu.inginea.lambdacriteria.base.ExpressionInfo;
+import eu.inginea.lambdacriteria.base.JpaOperationType;
 import eu.inginea.lambdacriteria.base.LoggingQueryExpressionVisitor;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Member;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +32,7 @@ import java.util.logging.Logger;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
 
 class WhereCriteriaVisitor extends LoggingQueryExpressionVisitor {
 
@@ -108,6 +112,10 @@ class WhereCriteriaVisitor extends LoggingQueryExpressionVisitor {
     }
 
     private boolean resolveFunction(Member member) {
+        switch (member.getName()) {
+            case "equals":
+                
+        }
         return false;
     }
     
@@ -200,13 +208,21 @@ class WhereCriteriaVisitor extends LoggingQueryExpressionVisitor {
         e.getSecond().accept(this);
         expressions.add(getJpaExpression());
 
-        switch (e.getExpressionType()) {
-            case ExpressionType.Equal:
-                setJpaExpression(cb.equal(expressions.remove(), expressions.remove()));
-        }
+        setJpaExpression(resolveJpaOpeation(expressions, JpaOperationType.valueFromJaQueOperationType(ExpressionType.Equal)));
         level--;
         clearInfoParsed();
         return visitResult;
+    }
+
+    private javax.persistence.criteria.Expression<?> resolveJpaOpeation(Collection<javax.persistence.criteria.Expression> expressions, 
+            JpaOperationType operation) {
+        Iterator<javax.persistence.criteria.Expression> itExpr = expressions.iterator();
+        switch (operation) {
+            case EQUALS:
+                return cb.equal(itExpr.next(), itExpr.next());
+            default:
+                throw new UnsupportedOperationException("" + operation);
+        }
     }
 
     private final boolean logOnlyParsed = false;
