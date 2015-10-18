@@ -18,6 +18,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Member;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -80,46 +81,49 @@ class WhereCriteriaVisitor extends LoggingQueryExpressionVisitor {
 
     @Override
     public Expression visit(MemberExpression e) {
+        Expression visitResult = null;
         infoParsed(e);
-        Expression visitResult = super.visit(e);
 
-        Member member = e.getMember();
-        
         boolean resolved = false;
         
-        resolved = resolved || resolveAliasVal(member);
+        resolved = resolved || (visitResult = resolveAliasVal(e)) != null;
+        resolved = resolved || (visitResult = resolveFunction(e)) != null;
+        resolved = resolved || (visitResult = resolveProperty(e)) != null;
         
-        resolved = resolved || resolveFunction(member);
-        
-        resolved = resolved || resolveProperty(member);
-
         clearInfoParsed();
         return visitResult;
     }
 
-    private boolean resolveAliasVal(Member member) {
+    private Expression resolveAliasVal(MemberExpression e) {
+        Member member = e.getMember();
+        
         if (Alias.class.isAssignableFrom(member.getDeclaringClass())) {
             try {
                 if (member.equals(Alias.class.getField("val"))) {
                     // just pass expression further
-                    return true;
+                    return super.visit(e);
                 }
             } catch (NoSuchFieldException | SecurityException ex) {
                 Logger.getLogger(WhereCriteriaVisitor.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        return false;
+        return null;
     }
 
-    private boolean resolveFunction(Member member) {
+    private Expression resolveFunction(MemberExpression e) {
+        Member member = e.getMember();
         switch (member.getName()) {
             case "equals":
-                
+                Expression visitResult = super.visit(e);
+                List<javax.persistence.criteria.Expression> expressions = new ArrayList<>();
+                expressions.add(getJpaExpression());
+                return visitResult;
         }
-        return false;
+        return null;
     }
     
-    private boolean resolveProperty(Member member) {
+    private Expression resolveProperty(MemberExpression e) {
+        Member member = e.getMember();
         List<PropertyDescriptor> propertyDescriptors = null;
         try {
             propertyDescriptors = Arrays.asList(Introspector.getBeanInfo(member.getDeclaringClass()).getPropertyDescriptors());
@@ -135,6 +139,7 @@ class WhereCriteriaVisitor extends LoggingQueryExpressionVisitor {
                     .findFirst();
             if (propertyDesc.isPresent()) {
                 infoParsed(propertyDesc);
+                Expression visitResult = super.visit(e);
                 if (getJpaExpression() instanceof Path) {
                     Path path = (Path)getJpaExpression();
                     setJpaExpression(path.get(propertyDesc.get().getName()));
@@ -142,13 +147,13 @@ class WhereCriteriaVisitor extends LoggingQueryExpressionVisitor {
                     Logger.getLogger(WhereCriteriaVisitor.class.getName()).log(Level.SEVERE, 
                             "Syntax error: Previous expression is not a criteria path: " + getJpaExpression());
                 }
-                return true;
+                return visitResult;
             } else {
                 Logger.getLogger(WhereCriteriaVisitor.class.getName()).log(Level.SEVERE, 
                         "Method " + member + " is not a getter");
             }
         }
-        return false;
+        return null;
     }
 
     @Override
