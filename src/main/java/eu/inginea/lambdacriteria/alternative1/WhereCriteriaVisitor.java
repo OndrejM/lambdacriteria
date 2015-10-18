@@ -114,9 +114,11 @@ class WhereCriteriaVisitor extends LoggingQueryExpressionVisitor {
         Member member = e.getMember();
         switch (member.getName()) {
             case "equals":
-                Expression visitResult = super.visit(e);
                 List<javax.persistence.criteria.Expression> expressions = new ArrayList<>();
                 expressions.add(getJpaExpression());
+                Expression visitResult = super.visit(e);
+                expressions.add(getJpaExpression());
+                setJpaExpression(resolveJpaOpeation(expressions, JpaOperationType.EQUALS));
                 return visitResult;
         }
         return null;

@@ -42,7 +42,8 @@ public class FeatureQueryWithLambdasAlternative1 extends QueryWithLambdasBase {
                 .select(p)
                 .from(p)
                 //.where(() -> p.val.getName() == "Ondro")
-                .where(() -> p.val.getName().equals("Ondro"))
+                //.where(() -> p.val.getName().equals("Ondro"))
+                .where(() -> "Ondro".equals(p.val.getName()))
                 .getResultList();
         isValidPersonByName(persons);
     }
