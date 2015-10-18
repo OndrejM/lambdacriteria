@@ -1,6 +1,6 @@
 package eu.inginea.lambdacriteria.alternative1;
 
-import eu.inginea.lambdacriteria.base.AliasInstance;
+import eu.inginea.lambdacriteria.base.SelectionInstance;
 import eu.inginea.lambdacriteria.base.JPALambdaQueryBase;
 import com.trigersoft.jaque.expression.LambdaExpression;
 import eu.inginea.lambdacriteria.Alias;
@@ -12,6 +12,7 @@ import javax.persistence.criteria.Root;
 
 /**
  * Main object to build query
+ *
  * @param <RESULT> Type of query result
  */
 public class LambdaQuery<RESULT> extends JPALambdaQueryBase<RESULT> {
@@ -33,8 +34,8 @@ public class LambdaQuery<RESULT> extends JPALambdaQueryBase<RESULT> {
         super.select(a);
         return this;
     }
-    
-    public <SELECTED> JPALambdaQueryBase<RESULT> select(Selector<SELECTED> selector) {
+
+    public <SELECTED> LambdaQuery<RESULT> select(Selector<SELECTED> selector) {
         return this;
     }
 
@@ -43,21 +44,25 @@ public class LambdaQuery<RESULT> extends JPALambdaQueryBase<RESULT> {
         return this;
     }
 
-    
+    public <SELECTED> LambdaQuery<RESULT> groupBy(Selector<SELECTED> selector) {
+        return this;
+    }
+
     public List<RESULT> getResultList() {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery q = cb.createQuery();
 
-        List<AliasInstance> allAliases = initAliasInstances(q);
-        
-        LambdaExpression<Condition> parsed = LambdaExpression.parse(whereCond);
-        WhereCriteriaVisitor whereCriteriaVisitor = new WhereCriteriaVisitor(cb, q, allAliases);
-        parsed.accept(whereCriteriaVisitor);
-        
+        List<SelectionInstance> allAliases = initAliases(q);
+
         // TODO support more aliases
-        AliasInstance aliasInstance = roots.get(0);
+        SelectionInstance aliasInstance = roots.get(0);
         Root<?> p = aliasInstance.getInstance();
-        q.select(p).where(whereCriteriaVisitor.getJpaExpression());
+        q.select(p);
+        if (whereCond != null) {
+            WhereCriteriaVisitor whereCriteriaVisitor = new WhereCriteriaVisitor(cb, q, allAliases);
+            LambdaExpression.parse(whereCond).accept(whereCriteriaVisitor);
+            q.where(whereCriteriaVisitor.getJpaExpression());
+        }
         List<RESULT> persons = em.createQuery(q)
                 .getResultList();
         return persons;

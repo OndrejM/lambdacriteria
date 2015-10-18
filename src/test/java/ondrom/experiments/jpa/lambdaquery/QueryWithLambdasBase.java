@@ -65,7 +65,10 @@ public class QueryWithLambdasBase extends JPATestBase {
     }
 
     protected void isValidPersonByName(List<Person> persons) {
-        assertThat("List of persons matching criteria", persons, is(iterableWithSize( 1 )));
+        assertThat("List of persons", persons, allOf( 
+                is(iterableWithSize( 1 )), 
+                everyItem(is(instanceOf(Person.class)))
+        ));
     }
     
     protected void canQueryPersonByNameGroupByHairColorUsingJPQL() {
@@ -90,7 +93,9 @@ public class QueryWithLambdasBase extends JPATestBase {
     }
 
     protected void isValidPersonByNameGroupByHairColor(List<String> colors) {
-        assertThat("List of hairColors matching criteria", colors, is(iterableWithSize( 1 )));
+        assertThat("List of hairColors", colors, allOf(
+                is(iterableWithSize( 1 )), everyItem(is(instanceOf(String.class)))
+        ));
     }
     
     protected void canQueryPersonByNameGroupByLifeEventPlaceUsingJPQL() {

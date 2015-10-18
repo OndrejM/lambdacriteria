@@ -1,6 +1,6 @@
 package eu.inginea.lambdacriteria.alternative2;
 
-import eu.inginea.lambdacriteria.base.AliasInstance;
+import eu.inginea.lambdacriteria.base.SelectionInstance;
 import eu.inginea.lambdacriteria.alternative1.*;
 import com.trigersoft.jaque.expression.BinaryExpression;
 import com.trigersoft.jaque.expression.ConstantExpression;
@@ -27,7 +27,7 @@ class WhereCriteriaVisitor2 extends JPAWhereCriteriaVisitorBase {
     // processing invocation parameter with this index
     private Integer currentParameterIndex = null;
 
-    public WhereCriteriaVisitor2(CriteriaBuilder cb, CriteriaQuery q, List<AliasInstance> aliasInstances) {
+    public WhereCriteriaVisitor2(CriteriaBuilder cb, CriteriaQuery q, List<SelectionInstance> aliasInstances) {
         super(cb, q, aliasInstances);
     }
 
@@ -75,7 +75,7 @@ class WhereCriteriaVisitor2 extends JPAWhereCriteriaVisitorBase {
     public Expression visit(ConstantExpression e) {
         Expression visitResult = super.visit(e); //To change body of generated methods, choose Tools | Templates.
         if (Alias.class.isAssignableFrom(e.getResultType())) {
-            AliasInstance aliasInstance = aliases.get(e.getValue());
+            SelectionInstance aliasInstance = aliases.get(e.getValue());
             info("Alias instance: " + aliasInstance, true);
             info(e, true);
         } else {

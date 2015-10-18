@@ -41,9 +41,21 @@ public class FeatureQueryWithLambdasAlternative1 extends QueryWithLambdasBase {
         List<Person> persons = new LambdaQuery<Person>(getEM())
                 .select(p)
                 .from(p)
-                .where(() -> p.val.getName() == "Ondro")
+                //.where(() -> p.val.getName() == "Ondro")
+                .where(() -> p.val.getName().equals("Ondro"))
                 .getResultList();
         isValidPersonByName(persons);
+    }
+    
+    @Test
+    public void canQueryPersonByHairColorUsingLambdas() {
+        Alias<Person> p = new Alias<>(Person.class);
+        List<Person> persons = new LambdaQuery<Person>(getEM())
+                .select(p)
+                .from(p)
+                .where(() -> p.val.getHairColor() == "blond")
+                .getResultList();
+        isValidPersonByBlondHair(persons);
     }
     
     List<Person> allPersons = null;
@@ -67,8 +79,7 @@ public class FeatureQueryWithLambdasAlternative1 extends QueryWithLambdasBase {
                 .getResultList();
         });
         then(() -> {
-            assertThat("List of persons matching criteria", persons, is(not(empty())));
-            assertThat("List of persons matching criteria", persons, is(iterableWithSize( 1 )));
+            isValidPersonByName(persons);
         });
     }
     
@@ -92,13 +103,19 @@ public class FeatureQueryWithLambdasAlternative1 extends QueryWithLambdasBase {
             colors = new LambdaQuery<String>(getEM())
                 .select(() -> le.val.getPlace())
                 .from(p)
-                .where(() -> "Ondro".equals(p.val.getName()))
-                .groupBy(le, LifeEvent::getPlace)
+                .groupBy(() -> le.val.getPlace())
                 .getResultList();
         });
         then(() -> {
             isValidPersonByNameGroupByHairColor(colors);
         });
+    }
+
+    private void isValidPersonByBlondHair(List<Person> persons) {
+        assertThat("List of persons", persons, allOf( 
+                is(iterableWithSize( 2 )), 
+                everyItem(is(instanceOf(Person.class)))
+        ));
     }
 
 }
