@@ -11,6 +11,7 @@ import com.trigersoft.jaque.expression.MemberExpression;
 import com.trigersoft.jaque.expression.ParameterExpression;
 import com.trigersoft.jaque.expression.UnaryExpression;
 import eu.inginea.lambdacriteria.Alias;
+import eu.inginea.lambdacriteria.base.ExpressionInfo;
 import eu.inginea.lambdacriteria.base.LoggingQueryExpressionVisitor;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -25,19 +26,16 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Root;
 
 class WhereCriteriaVisitor extends LoggingQueryExpressionVisitor {
 
     private CriteriaBuilder cb;
     private CriteriaQuery q;
     private Map<Alias, SelectionInstance> aliases = new HashMap<>();
-    private javax.persistence.criteria.Expression jpaExpression;
+    private ExpressionInfo expressionInfo = new ExpressionInfo();
     // processing invocation parameter with this index
     private Integer currentParameterIndex = null;
     private boolean topLevelInvocationExpressionVisited = false;
@@ -51,7 +49,7 @@ class WhereCriteriaVisitor extends LoggingQueryExpressionVisitor {
     }
 
     public javax.persistence.criteria.Expression getJpaExpression() {
-        return jpaExpression;
+        return expressionInfo.getJpaExpression();
     }
 
     @Override
@@ -78,6 +76,7 @@ class WhereCriteriaVisitor extends LoggingQueryExpressionVisitor {
 
     @Override
     public Expression visit(MemberExpression e) {
+        infoParsed(e);
         Expression visitResult = super.visit(e);
 
         Member member = e.getMember();
@@ -85,6 +84,8 @@ class WhereCriteriaVisitor extends LoggingQueryExpressionVisitor {
         boolean resolved = false;
         
         resolved = resolved || resolveAliasVal(member);
+        
+        resolved = resolved || resolveFunction(member);
         
         resolved = resolved || resolveProperty(member);
 
@@ -97,7 +98,6 @@ class WhereCriteriaVisitor extends LoggingQueryExpressionVisitor {
             try {
                 if (member.equals(Alias.class.getField("val"))) {
                     // just pass expression further
-                    jpaExpression = jpaExpression;
                     return true;
                 }
             } catch (NoSuchFieldException | SecurityException ex) {
@@ -107,6 +107,10 @@ class WhereCriteriaVisitor extends LoggingQueryExpressionVisitor {
         return false;
     }
 
+    private boolean resolveFunction(Member member) {
+        return false;
+    }
+    
     private boolean resolveProperty(Member member) {
         List<PropertyDescriptor> propertyDescriptors = null;
         try {
@@ -123,12 +127,12 @@ class WhereCriteriaVisitor extends LoggingQueryExpressionVisitor {
                     .findFirst();
             if (propertyDesc.isPresent()) {
                 infoParsed(propertyDesc);
-                if (jpaExpression instanceof Path) {
-                    Path path = (Path)jpaExpression;
+                if (getJpaExpression() instanceof Path) {
+                    Path path = (Path)getJpaExpression();
                     setJpaExpression(path.get(propertyDesc.get().getName()));
                 } else {
                     Logger.getLogger(WhereCriteriaVisitor.class.getName()).log(Level.SEVERE, 
-                            "Syntax error: Previous expression is not a criteria path: " + jpaExpression);
+                            "Syntax error: Previous expression is not a criteria path: " + getJpaExpression());
                 }
                 return true;
             } else {
@@ -192,9 +196,9 @@ class WhereCriteriaVisitor extends LoggingQueryExpressionVisitor {
 
         Queue<javax.persistence.criteria.Expression> expressions = new LinkedList<>();
         e.getFirst().accept(this);
-        expressions.add(jpaExpression);
+        expressions.add(getJpaExpression());
         e.getSecond().accept(this);
-        expressions.add(jpaExpression);
+        expressions.add(getJpaExpression());
 
         switch (e.getExpressionType()) {
             case ExpressionType.Equal:
@@ -227,7 +231,7 @@ class WhereCriteriaVisitor extends LoggingQueryExpressionVisitor {
     }
 
     private void setJpaExpression(javax.persistence.criteria.Expression jpaExpression) {
-        this.jpaExpression = jpaExpression;
+        this.expressionInfo.addJpaExpression(jpaExpression);
     }
-    
+
 }
