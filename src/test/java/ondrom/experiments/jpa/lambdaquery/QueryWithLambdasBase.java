@@ -50,7 +50,7 @@ public class QueryWithLambdasBase extends JPATestBase {
         List<Person> persons = getEM().createQuery("select p from Person p where p.name = :name", Person.class)
                 .setParameter("name", "Ondro")
                 .getResultList();
-        isValidPersonByName(persons);
+        isValidPersonByName(persons, 1);
     }
     
     protected void canQueryPersonByNameUsingCriteria() {
@@ -61,12 +61,11 @@ public class QueryWithLambdasBase extends JPATestBase {
         List<Person> persons = getEM().createQuery(q)
                 .setParameter("name", "Ondro")
                 .getResultList();
-        isValidPersonByName(persons);
+        isValidPersonByName(persons, 1);
     }
 
-    protected void isValidPersonByName(List<Person> persons) {
-        assertThat("List of persons", persons, allOf( 
-                is(iterableWithSize( 1 )), 
+    protected void isValidPersonByName(List<Person> persons, int size) {
+        assertThat("List of persons", persons, allOf(is(iterableWithSize(size)), 
                 everyItem(is(instanceOf(Person.class)))
         ));
     }

@@ -42,7 +42,7 @@ public class FeatureQueryWithLambdasAlternative2 extends QueryWithLambdasBase {
                 .getResultList();
         });
         then(() -> {
-            isValidPersonByName(persons);
+            isValidPersonByName(persons, 1);
         });
     }
 
