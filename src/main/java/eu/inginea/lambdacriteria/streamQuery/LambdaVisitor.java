@@ -4,7 +4,10 @@ import com.trigersoft.jaque.expression.*;
 import com.trigersoft.jaque.expression.Expression;
 import com.trigersoft.jaque.expression.ParameterExpression;
 import eu.inginea.lambdacriteria.base.*;
+import java.beans.*;
+import java.lang.reflect.Member;
 import java.util.*;
+import java.util.logging.*;
 
 /**
  * In final version, can extend QueryExpressionVisitor directly to avoid debug logging
@@ -13,9 +16,13 @@ class LambdaVisitor extends LoggingQueryExpressionVisitor {
 
     // processing invocation parameter with this index
     private Integer currentParameterIndex = null;
+    // flag to ignore first InvocationExpression, as it is only a wrapper and is not needed
     private boolean topLevelInvocationExpressionVisited = false;
 
     public LambdaVisitor() {
+    }
+
+    LambdaVisitor(StreamOperation streamOperation) {
     }
 
     @Override
@@ -39,9 +46,53 @@ class LambdaVisitor extends LoggingQueryExpressionVisitor {
         infoParsed(e);
 
         boolean resolved = false;
+        resolved = resolved || (visitResult = resolveFunction(e)) != null;
+        resolved = resolved || (visitResult = resolveProperty(e)) != null;
+        resolved = resolved || (visitResult = super.visit(e)) != null;
+        
+        if (!resolved) {
+            throw new RuntimeException("Member expression not resolved");
+        }
         
         clearInfoParsed();
         return visitResult;
+    }
+
+    private Expression resolveFunction(MemberExpression e) {
+        Member member = e.getMember();
+        switch (member.getName()) {
+            case "equals":
+                Expression visitResult = super.visit(e);
+                return visitResult;
+        }
+        return null;
+    }
+    
+    private Expression resolveProperty(MemberExpression e) {
+        Member member = e.getMember();
+        List<PropertyDescriptor> propertyDescriptors = null;
+        try {
+            propertyDescriptors = Arrays.asList(Introspector.getBeanInfo(member.getDeclaringClass()).getPropertyDescriptors());
+        } catch (IntrospectionException ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+        }
+        if (propertyDescriptors != null) {
+            Optional<PropertyDescriptor> propertyDesc = propertyDescriptors
+                    .stream()
+                    .filter(x -> {
+                        return x.getReadMethod().equals(member);
+                    })
+                    .findFirst();
+            if (propertyDesc.isPresent()) {
+                infoParsed(propertyDesc);
+                Expression visitResult = super.visit(e);
+                return visitResult;
+            } else {
+                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, 
+                        "Method " + member + " is not a getter");
+            }
+        }
+        return null;
     }
 
     @Override

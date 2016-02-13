@@ -15,7 +15,7 @@ import java.util.List;
 public class QueryExpressionVisitor extends SimpleExpressionVisitor {
 
     protected int level = 0;
-    
+
     public QueryExpressionVisitor() {
     }
 
@@ -34,52 +34,52 @@ public class QueryExpressionVisitor extends SimpleExpressionVisitor {
         return e;
     }
 
-        @Override
-        public Expression visit(UnaryExpression e) {
-            level++;
-            Expression visitResult = super.visit(e);
-            level--;
-            return visitResult; //To change body of generated methods, choose Tools | Templates.
-        }
+    @Override
+    public Expression visit(UnaryExpression e) {
+        level++;
+        Expression visitResult = super.visit(e);
+        level--;
+        return visitResult; //To change body of generated methods, choose Tools | Templates.
+    }
 
-        @Override
-        public Expression visit(ParameterExpression e) {
-            level++;
-            Expression visitResult = super.visit(e);
-            level--;
-            return visitResult; //To change body of generated methods, choose Tools | Templates.
-        }
+    @Override
+    public Expression visit(ParameterExpression e) {
+        level++;
+        Expression visitResult = super.visit(e);
+        level--;
+        return visitResult; //To change body of generated methods, choose Tools | Templates.
+    }
 
-        @Override
-        public Expression visit(MemberExpression e) {
-            level++;
-            Expression visitResult = super.visit(e);
-            level--;
-            return visitResult; //To change body of generated methods, choose Tools | Templates.
-        }
+    @Override
+    public Expression visit(MemberExpression e) {
+        level++;
+        Expression visitResult = super.visit(e);
+        level--;
+        return visitResult; //To change body of generated methods, choose Tools | Templates.
+    }
 
-        @Override
-        public Expression visit(LambdaExpression<?> e) {
-            level++;
-            Expression visitResult = super.visit(e);
-            level--;
-            return visitResult; //To change body of generated methods, choose Tools | Templates.
-        }
+    @Override
+    public Expression visit(LambdaExpression<?> e) {
+        level++;
+        Expression visitResult = super.visit(e);
+        level--;
+        return visitResult; //To change body of generated methods, choose Tools | Templates.
+    }
 
-        @Override
-        public Expression visit(ConstantExpression e) {
-            level++;
-            Expression visitResult = super.visit(e);
-            level--;
-            return visitResult; //To change body of generated methods, choose Tools | Templates.
-        }
+    @Override
+    public Expression visit(ConstantExpression e) {
+        level++;
+        Expression visitResult = super.visit(e);
+        level--;
+        return visitResult; //To change body of generated methods, choose Tools | Templates.
+    }
 
-        @Override
-        public Expression visit(BinaryExpression e) {
-            level++;
-            Expression visitResult = super.visit(e);
-            level--;
-            return visitResult; //To change body of generated methods, choose Tools | Templates.
-        }
+    @Override
+    public Expression visit(BinaryExpression e) {
+        level++;
+        Expression visitResult = super.visit(e);
+        level--;
+        return visitResult; //To change body of generated methods, choose Tools | Templates.
+    }
 
 }

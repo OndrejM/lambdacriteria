@@ -1,6 +1,5 @@
 package eu.inginea.lambdacriteria.streamQuery;
 
-import java.util.stream.Stream;
 import javax.persistence.EntityManager;
 
 public class StreamQuery<T> {
@@ -10,7 +9,7 @@ public class StreamQuery<T> {
         this.em = em;
     }
 
-    public Stream<T> from(Class<T> aClass) {
+    public QueryStream<T> from(Class<T> aClass) {
         // stub implementation doing everything in memory
         String entityName = em.getMetamodel().entity(aClass).getName();
         return new LambdaTransformingStream<>();
