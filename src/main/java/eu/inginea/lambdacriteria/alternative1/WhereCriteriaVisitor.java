@@ -1,39 +1,17 @@
 package eu.inginea.lambdacriteria.alternative1;
 
-import eu.inginea.lambdacriteria.base.SelectionInstance;
-import com.trigersoft.jaque.expression.BinaryExpression;
-import com.trigersoft.jaque.expression.ConstantExpression;
+import com.trigersoft.jaque.expression.*;
 import com.trigersoft.jaque.expression.Expression;
-import com.trigersoft.jaque.expression.ExpressionType;
-import com.trigersoft.jaque.expression.InvocationExpression;
-import com.trigersoft.jaque.expression.LambdaExpression;
-import com.trigersoft.jaque.expression.MemberExpression;
 import com.trigersoft.jaque.expression.ParameterExpression;
-import com.trigersoft.jaque.expression.UnaryExpression;
+import eu.inginea.lambdacriteria.base.SelectionInstance;
 import eu.inginea.lambdacriteria.Alias;
-import eu.inginea.lambdacriteria.base.ExpressionInfo;
-import eu.inginea.lambdacriteria.base.JpaOperationType;
-import eu.inginea.lambdacriteria.base.LoggingQueryExpressionVisitor;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
+import static eu.inginea.lambdacriteria.base.JpaOperationType.EQUALS;
+import eu.inginea.lambdacriteria.base.*;
+import java.beans.*;
 import java.lang.reflect.Member;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Queue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
+import java.util.*;
+import java.util.logging.*;
+import javax.persistence.criteria.*;
 
 class WhereCriteriaVisitor extends LoggingQueryExpressionVisitor {
 
