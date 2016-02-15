@@ -64,8 +64,12 @@ class LambdaVisitor extends LoggingQueryExpressionVisitor {
     private Expression resolveFunction(MemberExpression e) {
         Member member = e.getMember();
         Optional<Literal> literal = queryMapping.getLiteralForExpression(member);
-        queryVisitor.visit(literal.orElse(null));
-        return super.visit(e);
+        if (literal.isPresent()) {
+            queryVisitor.visit(literal.get());
+            return super.visit(e);
+        } else {
+            return null;
+        }
     }
     
     private Expression resolveProperty(MemberExpression e) {
@@ -82,10 +86,13 @@ class LambdaVisitor extends LoggingQueryExpressionVisitor {
                     .filter(x -> {
                         return x.getReadMethod().equals(member);
                     })
-                    .findFirst();
+                    .findAny();
             if (propertyDesc.isPresent()) {
-                infoParsed(propertyDesc);
+                infoParsed(propertyDesc.get());
                 Expression visitResult = super.visit(e);
+                queryVisitor.visit("Property " 
+                        + "P_" + ((ParameterExpression)e.getInstance()).getIndex() + "." 
+                        + propertyDesc.get().getName());
                 return visitResult;
             } else {
                 Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, 
@@ -124,7 +131,7 @@ class LambdaVisitor extends LoggingQueryExpressionVisitor {
     public Expression visit(ConstantExpression e) {
         infoParsed(e);
         Expression visitResult = super.visit(e);
-        
+        queryVisitor.visit(e.getValue() + ":" + e.getResultType().getSimpleName());
         clearInfoParsed();
         return visitResult;
     }
