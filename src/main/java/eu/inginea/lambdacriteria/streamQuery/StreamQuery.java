@@ -12,7 +12,7 @@ public class StreamQuery<T> {
     public QueryStream<T> from(Class<T> aClass) {
         // stub implementation doing everything in memory
         String entityName = em.getMetamodel().entity(aClass).getName();
-        return new LambdaTransformingStream<>();
+        return new LambdaTransformingStream<>((StreamOperation op) -> new LambdaVisitor(op));
     }
 
 }

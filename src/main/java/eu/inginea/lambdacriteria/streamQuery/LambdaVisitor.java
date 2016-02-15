@@ -12,7 +12,7 @@ import java.util.logging.*;
 /**
  * In final version, can extend QueryExpressionVisitor directly to avoid debug logging
  */
-class LambdaVisitor extends LoggingQueryExpressionVisitor {
+class LambdaVisitor extends QueryExpressionVisitor {
     
     private QueryMapping queryMapping;
     private QueryVisitor queryVisitor;
@@ -36,9 +36,7 @@ class LambdaVisitor extends LoggingQueryExpressionVisitor {
 
     @Override
     public Expression visit(ParameterExpression e) {
-        infoParsed(e);
         Expression visitResult = super.visit(e);
-        clearInfoParsed();
         int paramIndex = e.getIndex();
         return visitResult;
     }
@@ -46,7 +44,6 @@ class LambdaVisitor extends LoggingQueryExpressionVisitor {
     @Override
     public Expression visit(MemberExpression e) {
         Expression visitResult = null;
-        infoParsed(e);
 
         boolean resolved = false;
         resolved = resolved || (visitResult = resolveFunction(e)) != null;
@@ -57,7 +54,6 @@ class LambdaVisitor extends LoggingQueryExpressionVisitor {
             throw new RuntimeException("Member expression not resolved");
         }
         
-        clearInfoParsed();
         return visitResult;
     }
 
@@ -110,9 +106,6 @@ class LambdaVisitor extends LoggingQueryExpressionVisitor {
 
     @Override
     public Expression visit(InvocationExpression e) {
-        infoParsed(e);
-        clearInfoParsed();
-        level++;
         currentParameterIndex = null;
         for (Expression arg : e.getArguments()) {
             if (!topLevelInvocationExpressionVisited) {
@@ -123,54 +116,25 @@ class LambdaVisitor extends LoggingQueryExpressionVisitor {
         topLevelInvocationExpressionVisited = true;
         currentParameterIndex = null;
         Expression visitResult = e.getTarget().accept(this);
-        level--;
         return visitResult;
     }
 
     @Override
     public Expression visit(ConstantExpression e) {
-        infoParsed(e);
         Expression visitResult = super.visit(e);
         queryVisitor.visit(new Constant(e.getValue() + ":" + e.getResultType().getSimpleName()));
-        clearInfoParsed();
         return visitResult;
     }
 
     @Override
     public Expression visit(BinaryExpression e) {
-        infoParsed(e);
-        clearInfoParsed();
-        level++;
         Expression visitResult = e;
 
         Queue<javax.persistence.criteria.Expression> expressions = new LinkedList<>();
         e.getFirst().accept(this);
         e.getSecond().accept(this);
 
-        level--;
-        clearInfoParsed();
         return visitResult;
-    }
-
-    private final boolean logOnlyParsed = false;
-    private boolean lastLoggedParsed = false;
-
-    @Override
-    protected void info(Object loggedValue) {
-        if (!logOnlyParsed && !lastLoggedParsed) {
-            super.info(loggedValue);
-        }
-        lastLoggedParsed = false;
-    }
-
-    private void infoParsed(Object loggedValue) {
-        lastLoggedParsed = true;
-        String prefix = getPrefix();
-        System.out.println(prefix + "*" + createLogMessage(loggedValue));
-    }
-
-    private void clearInfoParsed() {
-        lastLoggedParsed = false;
     }
 
     public void setQueryMapping(QueryMapping queryMapping) {
@@ -181,6 +145,8 @@ class LambdaVisitor extends LoggingQueryExpressionVisitor {
         this.queryVisitor = queryVisitor;
     }
 
-
+    protected void infoParsed(Object get) {
+        // empty, to be extended if we want info
+    }
 
 }

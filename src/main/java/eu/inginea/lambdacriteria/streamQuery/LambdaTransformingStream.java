@@ -8,9 +8,15 @@ import java.util.stream.*;
 
 class LambdaTransformingStream<T> implements QueryStream<T>{
 
+    Function<StreamOperation, ? extends LambdaVisitor> lambdaVisitorProducer;
+
+    public LambdaTransformingStream(Function<StreamOperation, ? extends LambdaVisitor> lambdaVisitorProducer) {
+        this.lambdaVisitorProducer = lambdaVisitorProducer;
+    }
+    
     @Override
     public QueryStream<T> filter(QueryPredicate<? super T> predicate) {
-        LambdaVisitor lambdaVisitor = new LambdaVisitor(StreamOperation.FILTER);
+        LambdaVisitor lambdaVisitor = lambdaVisitorProducer.apply(StreamOperation.FILTER);
         LambdaQueryLoggingTransformer lambdaQueryLoggingTransformer = new LambdaQueryLoggingTransformer();
         lambdaVisitor.setQueryMapping(lambdaQueryLoggingTransformer);
         lambdaVisitor.setQueryVisitor(lambdaQueryLoggingTransformer);
