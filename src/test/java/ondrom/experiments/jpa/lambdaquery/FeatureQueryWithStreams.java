@@ -1,6 +1,6 @@
 package ondrom.experiments.jpa.lambdaquery;
 
-import eu.inginea.lambdacriteria.streamQuery.StreamQuery;
+import eu.inginea.lambdacriteria.streamQuery.*;
 import java.util.List;
 import java.util.stream.Collectors;
 import ondrom.experiments.jpa.Person;

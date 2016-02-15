@@ -6,7 +6,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-public abstract class JPATestBase {
+public abstract class JPATestBase implements BDDTestBase {
 
     private static final String PU_NAME = "test";
     
@@ -40,16 +40,4 @@ public abstract class JPATestBase {
         getEM().getTransaction().commit();
     }
 
-    protected void given(Runnable whenRunnable) {
-        whenRunnable.run();
-    }
-    
-    protected void when(Runnable whenRunnable) {
-        whenRunnable.run();
-    }
-    
-    protected void then(Runnable whenRunnable) {
-        whenRunnable.run();
-    }
-    
 }
