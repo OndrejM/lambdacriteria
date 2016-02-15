@@ -4,13 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MapKeyColumn;
-import javax.persistence.NamedQuery;
+import javax.persistence.*;
 
 @Entity
 @NamedQuery(name = Person.FindAllLeByName.QName, query = "select le from Person p, in (p.lifeEvents) le where le.place = ?1")
@@ -28,6 +22,9 @@ public class Person {
     
     private String name;
     private String hairColor;
+    
+    @OneToOne
+    private Address address;
     
     @ElementCollection
     @MapKeyColumn(name = "type")
@@ -66,6 +63,14 @@ public class Person {
 
     public void setHairColor(String hairColor) {
         this.hairColor = hairColor;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
     }
 
 }

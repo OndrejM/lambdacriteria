@@ -34,9 +34,30 @@ public class LambdaTransformingStreamTest implements BDDTestBase {
         });
         then(() -> {
             assertThat("terms parsed", transformer.getTerms(), containsExactly(
-                    new Path("Property P_0.name"),
+                    new Constant("Ondro:String"),
                     Operation.EQUAL,
-                    new Constant("Ondro:String")
+                    new Parameter(0),
+                    new Path("Property name")
+            ));
+        });
+    }
+
+    @Test
+    public void canQueryPersonByCityUsingTransfromingStream() {
+        given(() -> {
+            transformer = new InspectingTransformer();
+            queryStream = from(Person.class);
+        });
+        when(() -> {
+            queryStream.filter((p) -> "Nitra".equals(p.getAddress().getCity()));
+        });
+        then(() -> {
+            assertThat("terms parsed", transformer.getTerms(), containsExactly(
+                    new Constant("Nitra:String"),
+                    Operation.EQUAL,
+                    new Parameter(0),
+                    new Path("Property address"),
+                    new Path("Property city")
             ));
         });
     }

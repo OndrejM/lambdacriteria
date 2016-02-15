@@ -36,8 +36,8 @@ class LambdaVisitor extends QueryExpressionVisitor {
 
     @Override
     public Expression visit(ParameterExpression e) {
-        Expression visitResult = super.visit(e);
         int paramIndex = e.getIndex();
+        Expression visitResult = super.visit(e);
         return visitResult;
     }
 
@@ -61,8 +61,9 @@ class LambdaVisitor extends QueryExpressionVisitor {
         Member member = e.getMember();
         Optional<Literal> literal = queryMapping.getTermForExpression(member);
         if (literal.isPresent()) {
+            Expression visitResult = super.visit(e);
             queryVisitor.visit(literal.get());
-            return super.visit(e);
+            return visitResult;
         } else {
             return null;
         }
@@ -86,8 +87,11 @@ class LambdaVisitor extends QueryExpressionVisitor {
             if (propertyDesc.isPresent()) {
                 infoParsed(propertyDesc.get());
                 Expression visitResult = super.visit(e);
+                if (e.getInstance() instanceof ParameterExpression) {
+                    ParameterExpression param = (ParameterExpression)e.getInstance();
+                    queryVisitor.visit(new Parameter(param.getIndex()));
+                }
                 queryVisitor.visit(new Path("Property " 
-                        + "P_" + ((ParameterExpression)e.getInstance()).getIndex() + "." 
                         + propertyDesc.get().getName()));
                 return visitResult;
             } else {
@@ -107,6 +111,7 @@ class LambdaVisitor extends QueryExpressionVisitor {
     @Override
     public Expression visit(InvocationExpression e) {
         currentParameterIndex = null;
+        Expression visitResult = e.getTarget().accept(this);
         for (Expression arg : e.getArguments()) {
             if (!topLevelInvocationExpressionVisited) {
                 currentParameterIndex = (currentParameterIndex == null) ? 0 : currentParameterIndex + 1;
@@ -115,14 +120,13 @@ class LambdaVisitor extends QueryExpressionVisitor {
         }
         topLevelInvocationExpressionVisited = true;
         currentParameterIndex = null;
-        Expression visitResult = e.getTarget().accept(this);
         return visitResult;
     }
 
     @Override
     public Expression visit(ConstantExpression e) {
-        Expression visitResult = super.visit(e);
         queryVisitor.visit(new Constant(e.getValue() + ":" + e.getResultType().getSimpleName()));
+        Expression visitResult = super.visit(e);
         return visitResult;
     }
 

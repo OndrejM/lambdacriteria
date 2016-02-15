@@ -32,35 +32,43 @@ public class LoggingLambdaVisitor extends LambdaVisitor {
     @Override
     public Expression visit(UnaryExpression e) {
         info(e);
+        level++;
         Expression visitResult = super.visit(e);
+        level--;
         return visitResult; //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public Expression visit(ParameterExpression e) {
         info(e);
+        level++;
         Expression visitResult = super.visit(e);
+        level--;
         return visitResult; //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public Expression visit(MemberExpression e) {
         info(e);
+        level++;
         Expression visitResult = super.visit(e);
+        level--;
         return visitResult; //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public Expression visit(LambdaExpression<?> e) {
         info(e);
+        level++;
         Expression visitResult = super.visit(e);
+        level--;
         return visitResult; //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public Expression visit(InvocationExpression e) {
-        level++;
         info(e);
+        level++;
         Expression visitResult = super.visit(e);
         level--;
         return visitResult; //To change body of generated methods, choose Tools | Templates.
@@ -69,14 +77,16 @@ public class LoggingLambdaVisitor extends LambdaVisitor {
     @Override
     public Expression visit(ConstantExpression e) {
         info(e);
+        level++;
         Expression visitResult = super.visit(e);
+        level--;
         return visitResult; //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public Expression visit(BinaryExpression e) {
-        level++;
         info(e);
+        level++;
         Expression visitResult = super.visit(e);
         level--;
         return visitResult; //To change body of generated methods, choose Tools | Templates.
