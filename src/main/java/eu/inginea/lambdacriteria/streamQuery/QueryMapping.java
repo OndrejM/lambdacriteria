@@ -7,6 +7,6 @@ import java.util.Optional;
  */
 public interface QueryMapping {
 
-    Optional<Literal> getLiteralForExpression(Object expr);
+    Optional<Literal> getTermForExpression(Object expr);
 
 }

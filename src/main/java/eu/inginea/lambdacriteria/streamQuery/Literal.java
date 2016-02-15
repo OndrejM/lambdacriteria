@@ -1,8 +1,5 @@
 package eu.inginea.lambdacriteria.streamQuery;
 
-public interface Literal {
-
-    @Override
-    String toString();
+public interface Literal extends Term {
 
 }

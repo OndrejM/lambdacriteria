@@ -1,5 +1,6 @@
 package eu.inginea.lambdacriteria.streamQuery;
 
+import eu.inginea.lambdacriteria.streamQuery.loggingtransfromer.LambdaQueryLoggingTransformer;
 import com.trigersoft.jaque.expression.LambdaExpression;
 import java.util.*;
 import java.util.function.*;

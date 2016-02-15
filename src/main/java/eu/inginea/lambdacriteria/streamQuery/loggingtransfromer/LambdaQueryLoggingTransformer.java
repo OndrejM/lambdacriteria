@@ -1,15 +1,19 @@
-package eu.inginea.lambdacriteria.streamQuery;
+package eu.inginea.lambdacriteria.streamQuery.loggingtransfromer;
 
 import com.trigersoft.jaque.expression.ExpressionType;
+import eu.inginea.lambdacriteria.streamQuery.Literal;
+import eu.inginea.lambdacriteria.streamQuery.QueryMapping;
+import eu.inginea.lambdacriteria.streamQuery.QueryVisitor;
+import eu.inginea.lambdacriteria.streamQuery.Term;
 import java.lang.reflect.Method;
 import java.util.*;
 
 /**
  * Describes transformations from lambda expressions in query stream to final query like JPQL or Criteria
  */
-class LambdaQueryLoggingTransformer implements QueryMapping, QueryVisitor {
-    private Map<Object,Literal> literalsMapping = new HashMap<>();
-    private Collection<LiteralMapper> literalMappers = new ArrayList<>();
+public class LambdaQueryLoggingTransformer implements QueryMapping, QueryVisitor {
+    private final Map<Object,Literal> literalsMap = new HashMap<>();
+    private final Collection<LiteralMapper> literalMappers = new ArrayList<>();
     
     {
         OperationLiteral opEqual = new OperationLiteral(ExpressionType.Equal);
@@ -18,8 +22,8 @@ class LambdaQueryLoggingTransformer implements QueryMapping, QueryVisitor {
     }
 
     @Override
-    public Optional<Literal> getLiteralForExpression(Object expr) {
-        Optional<Literal> literal = Optional.ofNullable(literalsMapping.get(expr));
+    public Optional<Literal> getTermForExpression(Object expr) {
+        Optional<Literal> literal = Optional.ofNullable(literalsMap.get(expr));
         if (!literal.isPresent()) {
             literal = literalMappers.stream()
                     .map(mapper -> mapper.getLiteral(expr))
@@ -30,13 +34,13 @@ class LambdaQueryLoggingTransformer implements QueryMapping, QueryVisitor {
     }
 
     @Override
-    public void visit(Object literal) {
+    public void visit(Term literal) {
         System.out.println("Log: " + literal);
     }
 
     private void addLiteralsMapping(Literal value, Object key) {
         if (key != null) {
-            literalsMapping.put(key, value);
+            literalsMap.put(key, value);
         }
     }
 
