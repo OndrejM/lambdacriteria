@@ -9,7 +9,11 @@ class LambdaTransformingStream<T> implements QueryStream<T>{
 
     @Override
     public QueryStream<T> filter(QueryPredicate<? super T> predicate) {
-        LambdaExpression.parse(predicate).accept(new LambdaVisitor(StreamOperation.FILTER));
+        LambdaVisitor lambdaVisitor = new LambdaVisitor(StreamOperation.FILTER);
+        LambdaQueryLoggingTransformer lambdaQueryLoggingTransformer = new LambdaQueryLoggingTransformer();
+        lambdaVisitor.setQueryMapping(lambdaQueryLoggingTransformer);
+        lambdaVisitor.setQueryVisitor(lambdaQueryLoggingTransformer);
+        LambdaExpression.parse(predicate).accept(lambdaVisitor);
         return this;
     }
 

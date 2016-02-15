@@ -5,4 +5,6 @@ package eu.inginea.lambdacriteria.streamQuery;
  */
 public interface QueryVisitor {
 
+    public void visit(Object literal);
+
 }

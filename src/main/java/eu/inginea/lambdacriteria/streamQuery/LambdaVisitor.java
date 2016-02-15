@@ -13,6 +13,9 @@ import java.util.logging.*;
  * In final version, can extend QueryExpressionVisitor directly to avoid debug logging
  */
 class LambdaVisitor extends LoggingQueryExpressionVisitor {
+    
+    private QueryMapping queryMapping;
+    private QueryVisitor queryVisitor;
 
     // processing invocation parameter with this index
     private Integer currentParameterIndex = null;
@@ -60,12 +63,9 @@ class LambdaVisitor extends LoggingQueryExpressionVisitor {
 
     private Expression resolveFunction(MemberExpression e) {
         Member member = e.getMember();
-        switch (member.getName()) {
-            case "equals":
-                Expression visitResult = super.visit(e);
-                return visitResult;
-        }
-        return null;
+        Optional<Literal> literal = queryMapping.getLiteralForExpression(member);
+        queryVisitor.visit(literal.orElse(null));
+        return super.visit(e);
     }
     
     private Expression resolveProperty(MemberExpression e) {
@@ -164,6 +164,14 @@ class LambdaVisitor extends LoggingQueryExpressionVisitor {
 
     private void clearInfoParsed() {
         lastLoggedParsed = false;
+    }
+
+    public void setQueryMapping(QueryMapping queryMapping) {
+        this.queryMapping = queryMapping;
+    }
+
+    public void setQueryVisitor(QueryVisitor queryVisitor) {
+        this.queryVisitor = queryVisitor;
     }
 
 }

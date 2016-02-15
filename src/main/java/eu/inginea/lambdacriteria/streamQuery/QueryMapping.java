@@ -1,12 +1,12 @@
 package eu.inginea.lambdacriteria.streamQuery;
 
-import java.util.Map;
+import java.util.Optional;
 
 /**
  * Definitions for lambda to query language literals
  */
 public interface QueryMapping {
 
-    Map<Object, Object> getLiteralsMapping();
+    Optional<Literal> getLiteralForExpression(Object expr);
 
 }
