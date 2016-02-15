@@ -1,25 +1,29 @@
 package eu.inginea.lambdacriteria.streamQuery;
 
-import eu.inginea.lambdacriteria.streamQuery.loggingtransfromer.LambdaQueryLoggingTransformer;
 import com.trigersoft.jaque.expression.LambdaExpression;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
 
-class LambdaTransformingStream<T> implements QueryStream<T>{
+class LambdaTransformingStream<T> implements QueryStream<T> {
 
-    Function<StreamOperation, ? extends LambdaVisitor> lambdaVisitorProducer;
+    private final Function<StreamOperation, ? extends LambdaVisitor> lambdaVisitorSupplier;
+    private final Supplier<? extends QueryMapping> queryMappingSupplier;
+    private final Supplier<? extends QueryVisitor> queryVisitorSupplier;
 
-    public LambdaTransformingStream(Function<StreamOperation, ? extends LambdaVisitor> lambdaVisitorProducer) {
-        this.lambdaVisitorProducer = lambdaVisitorProducer;
+    public LambdaTransformingStream(Function<StreamOperation, ? extends LambdaVisitor> lambdaVisitorSupplier,
+            Supplier<? extends QueryMapping> queryMappingSupplier,
+            Supplier<? extends QueryVisitor> queryVisitorSupplier) {
+        this.lambdaVisitorSupplier = lambdaVisitorSupplier;
+        this.queryMappingSupplier = queryMappingSupplier;
+        this.queryVisitorSupplier = queryVisitorSupplier;
     }
-    
+
     @Override
     public QueryStream<T> filter(QueryPredicate<? super T> predicate) {
-        LambdaVisitor lambdaVisitor = lambdaVisitorProducer.apply(StreamOperation.FILTER);
-        LambdaQueryLoggingTransformer lambdaQueryLoggingTransformer = new LambdaQueryLoggingTransformer();
-        lambdaVisitor.setQueryMapping(lambdaQueryLoggingTransformer);
-        lambdaVisitor.setQueryVisitor(lambdaQueryLoggingTransformer);
+        LambdaVisitor lambdaVisitor = lambdaVisitorSupplier.apply(StreamOperation.FILTER);
+        lambdaVisitor.setQueryMapping(queryMappingSupplier.get());
+        lambdaVisitor.setQueryVisitor(queryVisitorSupplier.get());
         LambdaExpression.parse(predicate).accept(lambdaVisitor);
         return this;
     }

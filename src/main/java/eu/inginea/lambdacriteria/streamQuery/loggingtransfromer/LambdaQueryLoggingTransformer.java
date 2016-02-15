@@ -16,7 +16,7 @@ public class LambdaQueryLoggingTransformer implements QueryMapping, QueryVisitor
     private final Collection<LiteralMapper> literalMappers = new ArrayList<>();
     
     {
-        OperationLiteral opEqual = new OperationLiteral(ExpressionType.Equal);
+        Operation opEqual = Operation.EQUAL;
         addLiteralsMapping(opEqual, ExpressionType.Equal);
         addLiteralMapper(new MethodLiteral(opEqual, "equals", Object.class));
     }
@@ -73,19 +73,6 @@ public class LambdaQueryLoggingTransformer implements QueryMapping, QueryVisitor
                 }
             }
             return null;
-        }
-    }
-    
-    private class OperationLiteral implements Literal {
-        int operation;
-
-        public OperationLiteral(int operation) {
-            this.operation = operation;
-        }
-        
-        @Override
-        public String toString() {
-            return ExpressionType.toString(operation);
         }
     }
     

@@ -1,5 +1,7 @@
 package eu.inginea.lambdacriteria.streamQuery;
 
+import java.util.Objects;
+
 public class Path implements Term {
 
     private final String path;
@@ -11,6 +13,16 @@ public class Path implements Term {
     @Override
     public String toString() {
         return "Path{"  + path + '}';
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return equalsFromToString(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return hashCodeFromToString();
     }
 
 }
