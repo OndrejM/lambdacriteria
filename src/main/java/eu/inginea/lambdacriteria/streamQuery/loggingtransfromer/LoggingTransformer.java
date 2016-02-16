@@ -1,12 +1,7 @@
 package eu.inginea.lambdacriteria.streamQuery.loggingtransfromer;
 
-import eu.inginea.lambdacriteria.streamQuery.ExecuteQuery;
-import eu.inginea.lambdacriteria.streamQuery.Operation;
 import com.trigersoft.jaque.expression.ExpressionType;
-import eu.inginea.lambdacriteria.streamQuery.Literal;
-import eu.inginea.lambdacriteria.streamQuery.QueryMapping;
-import eu.inginea.lambdacriteria.streamQuery.QueryVisitor;
-import eu.inginea.lambdacriteria.streamQuery.Term;
+import eu.inginea.lambdacriteria.streamQuery.*;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Stream;
@@ -14,7 +9,7 @@ import java.util.stream.Stream;
 /**
  * Describes transformations from lambda expressions in query stream to final query like JPQL or Criteria
  */
-public class LambdaQueryLoggingTransformer implements QueryMapping, QueryVisitor, ExecuteQuery {
+public class LoggingTransformer implements QueryMapping, QueryVisitor, ExecuteQuery {
     private final Map<Object,Literal> literalsMap = new HashMap<>();
     private final Collection<LiteralMapper> literalMappers = new ArrayList<>();
     

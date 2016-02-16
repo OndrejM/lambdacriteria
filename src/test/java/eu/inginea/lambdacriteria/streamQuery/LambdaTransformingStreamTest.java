@@ -4,10 +4,8 @@ import eu.inginea.lambdacriteria.streamQuery.loggingtransfromer.*;
 import java.util.*;
 import java.util.stream.*;
 import ondrom.experiments.jpa.*;
-import static org.hamcrest.collection.IsIterableContainingInOrder.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.*;
 import org.hamcrest.Matcher;
-import static org.hamcrest.collection.IsCollectionWithSize.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -34,7 +32,7 @@ public class LambdaTransformingStreamTest implements BDDTestBase {
             queryStream.filter((p) -> "Ondro".equals(p.getName()));
         });
         then(() -> {
-            assertThat("terms parsed", transformer.getTerms(), containsExactly(
+            assertThat("terms parsed", transformer.getTerms(), contains(
                     new Constant("Ondro:String"),
                     Operation.EQUAL,
                     new Parameter(0),
@@ -53,7 +51,7 @@ public class LambdaTransformingStreamTest implements BDDTestBase {
             queryStream.filter((p) -> "Nitra".equals(p.getAddress().getCity()));
         });
         then(() -> {
-            assertThat("terms parsed", transformer.getTerms(), containsExactly(
+            assertThat("terms parsed", transformer.getTerms(), contains(
                     new Constant("Nitra:String"),
                     Operation.EQUAL,
                     new Parameter(0),
@@ -80,10 +78,6 @@ public class LambdaTransformingStreamTest implements BDDTestBase {
         });
     }
     private static final int SIZE = 2;
-
-    private static <Term> Matcher<Iterable<? extends Term>> containsExactly(Term... values) {
-        return contains(values);
-    }
 
     private <ENTITY> LambdaTransformingStream<ENTITY> from(Class<ENTITY> entityClass) {
         return new LambdaTransformingStream<>(
@@ -113,7 +107,7 @@ public class LambdaTransformingStreamTest implements BDDTestBase {
         private Collection<Term> terms = new ArrayList<>();
 
         {
-            LambdaQueryLoggingTransformer t = new LambdaQueryLoggingTransformer();
+            LoggingTransformer t = new LoggingTransformer();
             underlyingMapping = t;
             underlyingVisitor = t;
         }

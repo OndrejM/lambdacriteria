@@ -1,6 +1,6 @@
 package eu.inginea.lambdacriteria.streamQuery;
 
-import eu.inginea.lambdacriteria.streamQuery.loggingtransfromer.LambdaQueryLoggingTransformer;
+import eu.inginea.lambdacriteria.streamQuery.loggingtransfromer.LoggingTransformer;
 import javax.persistence.EntityManager;
 
 public class StreamQuery<T> {
@@ -14,7 +14,7 @@ public class StreamQuery<T> {
     public QueryStream<T> from(Class<T> aClass) {
         // stub implementation doing everything in memory
         String entityName = em.getMetamodel().entity(aClass).getName();
-        LambdaQueryLoggingTransformer transformer = new LambdaQueryLoggingTransformer();
+        LoggingTransformer transformer = new LoggingTransformer();
         return new LambdaTransformingStream<>((StreamOperation op) -> new LambdaVisitor(op),
                 () -> transformer,
                 () -> transformer,
