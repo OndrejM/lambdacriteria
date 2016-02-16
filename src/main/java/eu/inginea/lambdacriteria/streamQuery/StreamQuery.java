@@ -17,7 +17,9 @@ public class StreamQuery<T> {
         LambdaQueryLoggingTransformer transformer = new LambdaQueryLoggingTransformer();
         return new LambdaTransformingStream<>((StreamOperation op) -> new LambdaVisitor(op),
                 () -> transformer,
-                () -> transformer);
+                () -> transformer,
+                transformer::executeQuery
+        );
     }
 
 }

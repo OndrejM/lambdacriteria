@@ -1,4 +1,4 @@
-package eu.inginea.lambdacriteria.streamQuery.loggingtransfromer;
+package eu.inginea.lambdacriteria.streamQuery;
 
 import com.trigersoft.jaque.expression.ExpressionType;
 import eu.inginea.lambdacriteria.streamQuery.Literal;

@@ -1,5 +1,7 @@
 package eu.inginea.lambdacriteria.streamQuery.loggingtransfromer;
 
+import eu.inginea.lambdacriteria.streamQuery.ExecuteQuery;
+import eu.inginea.lambdacriteria.streamQuery.Operation;
 import com.trigersoft.jaque.expression.ExpressionType;
 import eu.inginea.lambdacriteria.streamQuery.Literal;
 import eu.inginea.lambdacriteria.streamQuery.QueryMapping;
@@ -7,11 +9,12 @@ import eu.inginea.lambdacriteria.streamQuery.QueryVisitor;
 import eu.inginea.lambdacriteria.streamQuery.Term;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Describes transformations from lambda expressions in query stream to final query like JPQL or Criteria
  */
-public class LambdaQueryLoggingTransformer implements QueryMapping, QueryVisitor {
+public class LambdaQueryLoggingTransformer implements QueryMapping, QueryVisitor, ExecuteQuery {
     private final Map<Object,Literal> literalsMap = new HashMap<>();
     private final Collection<LiteralMapper> literalMappers = new ArrayList<>();
     
@@ -46,6 +49,11 @@ public class LambdaQueryLoggingTransformer implements QueryMapping, QueryVisitor
 
     private void addLiteralMapper(LiteralMapper mapper) {
         literalMappers.add(mapper);
+    }
+
+    @Override
+    public Stream executeQuery() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     private interface LiteralMapper {

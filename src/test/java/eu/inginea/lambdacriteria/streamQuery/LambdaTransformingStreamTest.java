@@ -1,12 +1,13 @@
 package eu.inginea.lambdacriteria.streamQuery;
 
-import com.trigersoft.jaque.expression.*;
 import eu.inginea.lambdacriteria.streamQuery.loggingtransfromer.*;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.stream.*;
 import ondrom.experiments.jpa.*;
-import org.hamcrest.Matcher;
 import static org.hamcrest.collection.IsIterableContainingInOrder.*;
+import static org.hamcrest.CoreMatchers.*;
+import org.hamcrest.Matcher;
+import static org.hamcrest.collection.IsCollectionWithSize.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -62,6 +63,24 @@ public class LambdaTransformingStreamTest implements BDDTestBase {
         });
     }
 
+    @Test
+    public void canQueryPersonAndCollectUsingTransfromingStream() {
+        given(() -> {
+            transformer = new InspectingTransformer();
+            queryStream = from(Person.class);
+        });
+        when(() -> {
+            persons = queryStream.filter((p) -> "Nitra".equals(p.getAddress().getCity()))
+                    .collect(Collectors.toList());
+        });
+        then(() -> {
+            assertThat("persons collected", persons, allOf(is(not(nullValue())),
+                    hasSize(SIZE)
+            ));
+        });
+    }
+    private static final int SIZE = 2;
+
     private static <Term> Matcher<Iterable<? extends Term>> containsExactly(Term... values) {
         return contains(values);
     }
@@ -70,7 +89,13 @@ public class LambdaTransformingStreamTest implements BDDTestBase {
         return new LambdaTransformingStream<>(
                 (StreamOperation op) -> new InspectingLambdaVisitor(op),
                 () -> transformer,
-                () -> transformer);
+                () -> transformer,
+                () -> {
+                    ArrayList<ENTITY> list = new ArrayList<>();
+                    IntStream.range(0, SIZE).forEach(i -> list.add(null));
+                    return list.stream();
+                }
+        );
     }
 
     private static class InspectingLambdaVisitor extends LambdaVisitor {

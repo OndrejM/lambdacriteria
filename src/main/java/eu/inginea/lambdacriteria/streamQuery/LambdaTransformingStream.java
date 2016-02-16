@@ -5,22 +5,22 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
 
-class LambdaTransformingStream<T> implements QueryStream<T> {
+class LambdaTransformingStream<ROOT> implements QueryStream<ROOT> {
 
     private final Function<StreamOperation, ? extends LambdaVisitor> lambdaVisitorSupplier;
     private final Supplier<? extends QueryMapping> queryMappingSupplier;
     private final Supplier<? extends QueryVisitor> queryVisitorSupplier;
+    private Supplier<Stream<ROOT>> executeQuery;
 
-    public LambdaTransformingStream(Function<StreamOperation, ? extends LambdaVisitor> lambdaVisitorSupplier,
-            Supplier<? extends QueryMapping> queryMappingSupplier,
-            Supplier<? extends QueryVisitor> queryVisitorSupplier) {
+    public LambdaTransformingStream(Function<StreamOperation, ? extends LambdaVisitor> lambdaVisitorSupplier, Supplier<? extends QueryMapping> queryMappingSupplier, Supplier<? extends QueryVisitor> queryVisitorSupplier, Supplier<Stream<ROOT>> executeQuery) {
         this.lambdaVisitorSupplier = lambdaVisitorSupplier;
         this.queryMappingSupplier = queryMappingSupplier;
         this.queryVisitorSupplier = queryVisitorSupplier;
+        this.executeQuery = executeQuery;
     }
 
     @Override
-    public QueryStream<T> filter(QueryPredicate<? super T> predicate) {
+    public QueryStream<ROOT> filter(QueryPredicate<? super ROOT> predicate) {
         LambdaVisitor lambdaVisitor = lambdaVisitorSupplier.apply(StreamOperation.FILTER);
         lambdaVisitor.setQueryMapping(queryMappingSupplier.get());
         lambdaVisitor.setQueryVisitor(queryVisitorSupplier.get());
@@ -28,67 +28,73 @@ class LambdaTransformingStream<T> implements QueryStream<T> {
         return this;
     }
 
-    public <R> Stream<R> map(Function<? super T, ? extends R> mapper) {
+    @Override
+    public <COLLECTED, ACCUMULATION> COLLECTED collect(Collector<? super ROOT, ACCUMULATION, COLLECTED> collector) {
+        Stream<ROOT> inputStream = executeQuery.get();
+        return inputStream.collect(collector);
+    }
+
+    public <MAPPED_TO> Stream<MAPPED_TO> map(Function<? super ROOT, ? extends MAPPED_TO> mapper) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public IntStream mapToInt(ToIntFunction<? super T> mapper) {
+    public IntStream mapToInt(ToIntFunction<? super ROOT> mapper) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public LongStream mapToLong(ToLongFunction<? super T> mapper) {
+    public LongStream mapToLong(ToLongFunction<? super ROOT> mapper) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public DoubleStream mapToDouble(ToDoubleFunction<? super T> mapper) {
+    public DoubleStream mapToDouble(ToDoubleFunction<? super ROOT> mapper) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public <R> Stream<R> flatMap(Function<? super T, ? extends Stream<? extends R>> mapper) {
+    public <R> Stream<R> flatMap(Function<? super ROOT, ? extends Stream<? extends R>> mapper) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public IntStream flatMapToInt(Function<? super T, ? extends IntStream> mapper) {
+    public IntStream flatMapToInt(Function<? super ROOT, ? extends IntStream> mapper) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public LongStream flatMapToLong(Function<? super T, ? extends LongStream> mapper) {
+    public LongStream flatMapToLong(Function<? super ROOT, ? extends LongStream> mapper) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public DoubleStream flatMapToDouble(Function<? super T, ? extends DoubleStream> mapper) {
+    public DoubleStream flatMapToDouble(Function<? super ROOT, ? extends DoubleStream> mapper) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public Stream<T> distinct() {
+    public Stream<ROOT> distinct() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public Stream<T> sorted() {
+    public Stream<ROOT> sorted() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public Stream<T> sorted(Comparator<? super T> comparator) {
+    public Stream<ROOT> sorted(Comparator<? super ROOT> comparator) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public Stream<T> peek(Consumer<? super T> action) {
+    public Stream<ROOT> peek(Consumer<? super ROOT> action) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public Stream<T> limit(long maxSize) {
+    public Stream<ROOT> limit(long maxSize) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public Stream<T> skip(long n) {
+    public Stream<ROOT> skip(long n) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void forEach(Consumer<? super T> action) {
+    public void forEach(Consumer<? super ROOT> action) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void forEachOrdered(Consumer<? super T> action) {
+    public void forEachOrdered(Consumer<? super ROOT> action) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -100,32 +106,27 @@ class LambdaTransformingStream<T> implements QueryStream<T> {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public T reduce(T identity, BinaryOperator<T> accumulator) {
+    public ROOT reduce(ROOT identity, BinaryOperator<ROOT> accumulator) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public Optional<T> reduce(BinaryOperator<T> accumulator) {
+    public Optional<ROOT> reduce(BinaryOperator<ROOT> accumulator) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public <U> U reduce(U identity, BiFunction<U, ? super T, U> accumulator, BinaryOperator<U> combiner) {
+    public <U> U reduce(U identity, BiFunction<U, ? super ROOT, U> accumulator, BinaryOperator<U> combiner) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public <R> R collect(Supplier<R> supplier, BiConsumer<R, ? super T> accumulator, BiConsumer<R, R> combiner) {
+    public <R> R collect(Supplier<R> supplier, BiConsumer<R, ? super ROOT> accumulator, BiConsumer<R, R> combiner) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
-    public <R, A> R collect(Collector<? super T, A, R> collector) {
+    public Optional<ROOT> min(Comparator<? super ROOT> comparator) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public Optional<T> min(Comparator<? super T> comparator) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public Optional<T> max(Comparator<? super T> comparator) {
+    public Optional<ROOT> max(Comparator<? super ROOT> comparator) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -133,31 +134,31 @@ class LambdaTransformingStream<T> implements QueryStream<T> {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public boolean anyMatch(Predicate<? super T> predicate) {
+    public boolean anyMatch(Predicate<? super ROOT> predicate) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public boolean allMatch(Predicate<? super T> predicate) {
+    public boolean allMatch(Predicate<? super ROOT> predicate) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public boolean noneMatch(Predicate<? super T> predicate) {
+    public boolean noneMatch(Predicate<? super ROOT> predicate) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public Optional<T> findFirst() {
+    public Optional<ROOT> findFirst() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public Optional<T> findAny() {
+    public Optional<ROOT> findAny() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public Iterator<T> iterator() {
+    public Iterator<ROOT> iterator() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public Spliterator<T> spliterator() {
+    public Spliterator<ROOT> spliterator() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -165,19 +166,19 @@ class LambdaTransformingStream<T> implements QueryStream<T> {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public Stream<T> sequential() {
+    public Stream<ROOT> sequential() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public Stream<T> parallel() {
+    public Stream<ROOT> parallel() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public Stream<T> unordered() {
+    public Stream<ROOT> unordered() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public Stream<T> onClose(Runnable closeHandler) {
+    public Stream<ROOT> onClose(Runnable closeHandler) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

@@ -14,7 +14,7 @@ import java.util.List;
 
 public class QueryExpressionVisitor extends SimpleExpressionVisitor {
 
-    // TODO move to LoggingLambdaVisitor
+    // TODO move to LoggingLambdaVisitor after getting rid of lambda alternatives
     protected int level = 0;
 
     public QueryExpressionVisitor() {
