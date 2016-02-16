@@ -5,7 +5,6 @@ import java.util.*;
 import java.util.stream.*;
 import ondrom.experiments.jpa.*;
 import static org.hamcrest.Matchers.*;
-import org.hamcrest.Matcher;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -34,7 +33,7 @@ public class LambdaTransformingStreamTest implements BDDTestBase {
         then(() -> {
             assertThat("terms parsed", transformer.getTerms(), contains(
                     new Constant("Ondro:String"),
-                    Operation.EQUAL,
+                    BinaryOperation.EQUAL,
                     new Parameter(0),
                     new Path("Property name")
             ));
@@ -53,7 +52,7 @@ public class LambdaTransformingStreamTest implements BDDTestBase {
         then(() -> {
             assertThat("terms parsed", transformer.getTerms(), contains(
                     new Constant("Nitra:String"),
-                    Operation.EQUAL,
+                    BinaryOperation.EQUAL,
                     new Parameter(0),
                     new Path("Property address"),
                     new Path("Property city")

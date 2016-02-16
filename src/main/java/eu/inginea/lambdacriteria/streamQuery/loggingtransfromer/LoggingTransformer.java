@@ -14,7 +14,7 @@ public class LoggingTransformer implements QueryMapping, QueryVisitor, ExecuteQu
     private final Collection<LiteralMapper> literalMappers = new ArrayList<>();
     
     {
-        Operation opEqual = Operation.EQUAL;
+        BinaryOperation opEqual = BinaryOperation.EQUAL;
         addLiteralsMapping(opEqual, ExpressionType.Equal);
         addLiteralMapper(new MethodLiteral(opEqual, "equals", Object.class));
     }
