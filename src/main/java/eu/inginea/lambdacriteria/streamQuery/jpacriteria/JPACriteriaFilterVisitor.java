@@ -2,6 +2,7 @@ package eu.inginea.lambdacriteria.streamQuery.jpacriteria;
 
 import eu.inginea.lambdacriteria.streamQuery.*;
 import eu.inginea.lambdacriteria.streamQuery.Path;
+import eu.inginea.lambdacriteria.streamQuery.ruleengine.RuleEngine;
 import java.util.*;
 import static java.util.Arrays.asList;
 import java.util.function.Function;
@@ -11,16 +12,13 @@ import javax.persistence.criteria.*;
 
 public class JPACriteriaFilterVisitor implements QueryVisitor {
 
-    private static Map<List<Class<?>>, Function<List<?>, Expression>> rules = new HashMap<>();
+    private static final RuleEngine engine = new RuleEngine();
     private Class<?> rootClass;
-    private Deque<Object> expressionBuffer = new LinkedList<>();
 
     static {
-        rules.put(asList(Constant.class), c -> {
-            return new StubExpression(c.get(0));
-        });
-        rules.put(asList(Expression.class, BinaryOperation.class, Expression.class), JPACriteriaFilterVisitor::concatenate);
-        rules.put(asList(Parameter.class, Path.class), JPACriteriaFilterVisitor::concatenatePath);
+        engine.addRule(Constant.class, c -> new StubExpression(c));
+        engine.addRule(asList(Expression.class, BinaryOperation.class, Expression.class), JPACriteriaFilterVisitor::concatenate);
+        engine.addRule(asList(Parameter.class, Path.class), JPACriteriaFilterVisitor::concatenatePath);
     }
 
     public static Expression concatenate(List<?> expList) {
@@ -37,47 +35,11 @@ public class JPACriteriaFilterVisitor implements QueryVisitor {
 
     @Override
     public void visit(Term literal) {
-        expressionBuffer.add(literal);
-        while (matchSomeRule()) {
-        }
-    }
-
-    private boolean matchSomeRule() {
-        boolean ruleMatches = false;
-        List<Class<?>> expTypesList = new LinkedList<>();
-        Iterator<Object> itExp = expressionBuffer.descendingIterator();
-        while (itExp.hasNext() && !ruleMatches) {
-            expTypesList.add(0, itExp.next().getClass());
-            Function<List<?>, Expression> rule = findFirstMatchingRule(expTypesList);
-            if (rule != null) {
-                ruleMatches = true;
-                List<Object> expList = IntStream.range(0, expTypesList.size())
-                        .mapToObj(i -> expressionBuffer.pollLast())
-                        .collect(toList());
-                Collections.reverse(expList);
-                expressionBuffer.add(rule.apply(expList));
-            }
-        }
-        return ruleMatches;
-    }
-
-    private static Function<List<?>, Expression> findFirstMatchingRule(List<Class<?>> expTypesList) {
-        Optional<List<Class<?>>> matchingKey = rules.keySet().stream()
-                .filter(typeList -> {
-                    Iterator<Class<?>> itTypes = expTypesList.iterator();
-                    return expTypesList.size() == typeList.size()
-                            && typeList.stream().allMatch(t -> t.isAssignableFrom(itTypes.next()));
-                })
-                .findAny();
-        if (matchingKey.isPresent()) {
-            return rules.get(matchingKey.get());
-        } else {
-            return null;
-        }
+        engine.addTerm(literal);
     }
 
     public Expression getCriteriaQuery() {
-        return (Expression)expressionBuffer.getFirst();
+        return (Expression)engine.getExpression();
     }
 
     private static class StubExpression implements Expression {
