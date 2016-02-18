@@ -25,11 +25,21 @@ public class RuleEngine {
     
     public void addTerm(Object term) {
         expressionBuffer.add(term);
-        while (matchSomeRule()) {
+        if (!matchSomeRule()) {
+            expressionBuffer.removeLast();
+            while (matchSomeRule()) {
+            }
+            expressionBuffer.add(term);
+            matchSomeRule();
         }
     }
     
     public Object getExpression() {
+        while (matchSomeRule()) {
+        }
+        if (expressionBuffer.size() > 1) {
+            throw new IllegalStateException("There should be exactly on expression in buffer");
+        }
         return expressionBuffer.getFirst();
     }
     

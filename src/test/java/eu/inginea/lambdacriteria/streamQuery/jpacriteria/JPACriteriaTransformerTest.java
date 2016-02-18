@@ -44,6 +44,28 @@ public class JPACriteriaTransformerTest extends JPATestBase {
         });
     }
 
+    @Test
+    public void can_build_criteria_for_nested_paths() {
+        given(() -> {
+            transformer = personTransformer();
+            terms = Arrays.asList(
+                    new Constant("Nitra"),
+                    BinaryOperation.EQUAL,
+                    new Parameter(0),
+                    new Path("address"),
+                    new Path("city")
+            );
+        });
+        when(() -> {
+            terms.stream().forEach(transformer::handleToken);
+        });
+        then(() -> {
+            Expression<?> criteriaQuery = transformer.getCriteriaQuery();
+            assertThat("criteria query", criteriaQuery, is(not(nullValue()))); 
+            assertThat("criteria query type", criteriaQuery.getJavaType(), is(equalTo(Boolean.class)));
+        });
+    }
+
     private JPACriteriaFilterHandler personTransformer() {
         CriteriaBuilder cb = getEM().getCriteriaBuilder();
         CriteriaQuery<Object> q = cb.createQuery();

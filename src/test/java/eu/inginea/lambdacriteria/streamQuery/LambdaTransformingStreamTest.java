@@ -41,10 +41,10 @@ public class LambdaTransformingStreamTest implements BDDTestBase {
         });
         then(() -> {
             assertThat("terms parsed", transformer.getTerms(), contains(
-                    new Constant("Ondro:String"),
+                    new Constant("Ondro"),
                     BinaryOperation.EQUAL,
                     new Parameter(0),
-                    new Path("Property name")
+                    new Path("name")
             ));
         });
     }
@@ -60,11 +60,11 @@ public class LambdaTransformingStreamTest implements BDDTestBase {
         });
         then(() -> {
             assertThat("terms parsed", transformer.getTerms(), contains(
-                    new Constant("Nitra:String"),
+                    new Constant("Nitra"),
                     BinaryOperation.EQUAL,
                     new Parameter(0),
-                    new Path("Property address"),
-                    new Path("Property city")
+                    new Path("address"),
+                    new Path("city")
             ));
         });
     }

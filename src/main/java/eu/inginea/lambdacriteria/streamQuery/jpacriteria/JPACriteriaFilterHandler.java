@@ -20,6 +20,7 @@ public class JPACriteriaFilterHandler<ROOT_ENTITY> implements TokenHandler {
         engine.addRule(Constant.class, this::constantToExpression);
         engine.addRule(asList(Expression.class, BinaryOperation.class, Expression.class), this::binaryOperation);
         engine.addRule(asList(Parameter.class, Path.class), this::concatenatePath);
+        engine.addRule(asList(javax.persistence.criteria.Path.class, Path.class), this::concatenatePath);
     }
 
     public JPACriteriaFilterHandler(javax.persistence.criteria.Path<ROOT_ENTITY> rootPath, CriteriaBuilder cb, CriteriaQuery q) {
@@ -48,10 +49,17 @@ public class JPACriteriaFilterHandler<ROOT_ENTITY> implements TokenHandler {
 
     public Expression concatenatePath(List<?> expList) {
         int i = 0;
-        Parameter param = (Parameter) expList.get(i++);
+        Object left = expList.get(i++);
         Path pathLiteral = (Path) expList.get(i++);
+        
+        javax.persistence.criteria.Path<?> jpaPath = null;
+        if (left instanceof Parameter) {
+            jpaPath = rootPath;
+        } else if (left instanceof javax.persistence.criteria.Path) {
+            jpaPath = (javax.persistence.criteria.Path)left;
+        }
 
-        return rootPath.get(pathLiteral.getPath());
+        return jpaPath.get(pathLiteral.getPath());
     }
 
     @Override
