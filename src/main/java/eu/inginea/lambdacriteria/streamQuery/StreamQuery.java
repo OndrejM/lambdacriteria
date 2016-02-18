@@ -1,6 +1,6 @@
 package eu.inginea.lambdacriteria.streamQuery;
 
-import eu.inginea.lambdacriteria.streamQuery.jpacriteria.JPACriteriaFilterVisitor;
+import eu.inginea.lambdacriteria.streamQuery.jpacriteria.JPACriteriaFilterHandler;
 import eu.inginea.lambdacriteria.streamQuery.loggingtransfromer.LoggingTransformer;
 import java.util.stream.Stream;
 import javax.persistence.EntityManager;
@@ -24,11 +24,13 @@ public class StreamQuery<ROOT_ENTITY> {
         private Class<?> rootClass;
         private CriteriaBuilder cb;
         private CriteriaQuery q;
+        private final Root rootPath;
 
         public JPATransformer(Class<?> rootClass, EntityManager em) {
             this.rootClass = rootClass;
             cb = em.getCriteriaBuilder();
             q = cb.createQuery();
+            rootPath = q.from(rootClass);
         }
         
         @Override
@@ -43,8 +45,8 @@ public class StreamQuery<ROOT_ENTITY> {
         }
 
         @Override
-        public QueryVisitor supplyQueryVisitor() {
-            return new JPACriteriaFilterVisitor(rootClass, cb, q);
+        public TokenHandler supplyQueryVisitor() {
+            return new JPACriteriaFilterHandler(rootPath, cb, q);
         }
 
         @Override

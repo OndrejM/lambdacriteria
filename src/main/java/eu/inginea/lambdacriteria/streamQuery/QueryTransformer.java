@@ -8,7 +8,7 @@ public interface QueryTransformer<ROOT_ENTITY> {
 
     QueryMapping supplyMapping();
 
-    QueryVisitor supplyQueryVisitor();
+    TokenHandler supplyQueryVisitor();
     
     Stream<ROOT_ENTITY> getResults();
 }

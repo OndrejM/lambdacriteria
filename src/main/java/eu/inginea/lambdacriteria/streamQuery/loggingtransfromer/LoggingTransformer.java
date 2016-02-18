@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 /**
  * Describes transformations from lambda expressions in query stream to final query like JPQL or Criteria
  */
-public class LoggingTransformer implements QueryMapping, QueryVisitor, ExecuteQuery {
+public class LoggingTransformer implements QueryMapping, TokenHandler, ExecuteQuery {
     private final Map<Object,Literal> literalsMap = new HashMap<>();
     private final Collection<LiteralMapper> literalMappers = new ArrayList<>();
     
@@ -35,7 +35,7 @@ public class LoggingTransformer implements QueryMapping, QueryVisitor, ExecuteQu
     }
 
     @Override
-    public void visit(Term literal) {
+    public void handleToken(Term literal) {
         System.out.println("Log: " + literal);
     }
 

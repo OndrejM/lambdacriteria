@@ -9,7 +9,7 @@ class LambdaTransformingStream<ROOT> implements QueryStream<ROOT> {
 
     private final Function<StreamOperation, ? extends LambdaVisitor> lambdaVisitorSupplier;
     private final Supplier<? extends QueryMapping> queryMappingSupplier;
-    private final Supplier<? extends QueryVisitor> queryVisitorSupplier;
+    private final Supplier<? extends TokenHandler> queryVisitorSupplier;
     private Supplier<Stream<ROOT>> executeQuery;
 
     public LambdaTransformingStream(QueryTransformer<ROOT> transformer) {

@@ -5,8 +5,8 @@ import eu.inginea.lambdacriteria.streamQuery.ruleengine.Term;
 /**
  * Visitor of stream lambda literals
  */
-public interface QueryVisitor {
+public interface TokenHandler {
 
-    public void visit(Term literal);
+    public void handleToken(Term literal);
 
 }

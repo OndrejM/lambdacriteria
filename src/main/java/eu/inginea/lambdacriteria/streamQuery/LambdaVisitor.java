@@ -19,7 +19,7 @@ import java.util.logging.*;
 class LambdaVisitor extends QueryExpressionVisitor {
     
     private QueryMapping queryMapping;
-    private QueryVisitor queryVisitor;
+    private TokenHandler queryVisitor;
 
     // processing invocation parameter with this index
     private Integer currentParameterIndex = null;
@@ -66,7 +66,7 @@ class LambdaVisitor extends QueryExpressionVisitor {
         Optional<Literal> literal = queryMapping.getTermForExpression(member);
         if (literal.isPresent()) {
             Expression visitResult = super.visit(e);
-            queryVisitor.visit(literal.get());
+            queryVisitor.handleToken(literal.get());
             return visitResult;
         } else {
             return null;
@@ -93,10 +93,9 @@ class LambdaVisitor extends QueryExpressionVisitor {
                 Expression visitResult = super.visit(e);
                 if (e.getInstance() instanceof ParameterExpression) {
                     ParameterExpression param = (ParameterExpression)e.getInstance();
-                    queryVisitor.visit(new Parameter(param.getIndex()));
+                    queryVisitor.handleToken(new Parameter(param.getIndex()));
                 }
-                queryVisitor.visit(new Path("Property " 
-                        + propertyDesc.get().getName()));
+                queryVisitor.handleToken(new Path(propertyDesc.get().getName()));
                 return visitResult;
             } else {
                 Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, 
@@ -129,7 +128,7 @@ class LambdaVisitor extends QueryExpressionVisitor {
 
     @Override
     public Expression visit(ConstantExpression e) {
-        queryVisitor.visit(new Constant(e.getValue() + ":" + e.getResultType().getSimpleName()));
+        queryVisitor.handleToken(new Constant(e.getValue() + ":" + e.getResultType().getSimpleName()));
         Expression visitResult = super.visit(e);
         return visitResult;
     }
@@ -149,7 +148,7 @@ class LambdaVisitor extends QueryExpressionVisitor {
         this.queryMapping = queryMapping;
     }
 
-    public void setQueryVisitor(QueryVisitor queryVisitor) {
+    public void setQueryVisitor(TokenHandler queryVisitor) {
         this.queryVisitor = queryVisitor;
     }
 

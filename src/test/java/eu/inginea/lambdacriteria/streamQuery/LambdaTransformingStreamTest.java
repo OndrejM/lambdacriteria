@@ -1,6 +1,6 @@
 package eu.inginea.lambdacriteria.streamQuery;
 
-import eu.inginea.lambdacriteria.streamQuery.jpacriteria.JPACriteriaFilterVisitor;
+import eu.inginea.lambdacriteria.streamQuery.jpacriteria.JPACriteriaFilterHandler;
 import eu.inginea.lambdacriteria.streamQuery.ruleengine.Term;
 import eu.inginea.lambdacriteria.streamQuery.ruleengine.Path;
 import eu.inginea.lambdacriteria.streamQuery.ruleengine.Parameter;
@@ -104,7 +104,7 @@ public class LambdaTransformingStreamTest implements BDDTestBase {
         }
 
         @Override
-        public QueryVisitor supplyQueryVisitor() {
+        public TokenHandler supplyQueryVisitor() {
             return transformer;
         }
 
@@ -125,10 +125,10 @@ public class LambdaTransformingStreamTest implements BDDTestBase {
 
     }
 
-    private static class InspectingTransformer implements QueryMapping, QueryVisitor {
+    private static class InspectingTransformer implements QueryMapping, TokenHandler {
 
         private final QueryMapping underlyingMapping;
-        private final QueryVisitor underlyingVisitor;
+        private final TokenHandler underlyingVisitor;
         private Collection<Term> terms = new ArrayList<>();
 
         {
@@ -143,8 +143,8 @@ public class LambdaTransformingStreamTest implements BDDTestBase {
         }
 
         @Override
-        public void visit(Term literal) {
-            underlyingVisitor.visit(literal);
+        public void handleToken(Term literal) {
+            underlyingVisitor.handleToken(literal);
             terms.add(literal);
         }
 

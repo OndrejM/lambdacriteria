@@ -2,10 +2,14 @@ package eu.inginea.lambdacriteria.streamQuery.ruleengine;
 
 public class Constant implements Term {
 
-    private final String value;
+    private final Object value;
     
-    public Constant(String value) {
+    public Constant(Object value) {
         this.value = value;
+    }
+
+    public Object getValue() {
+        return value;
     }
 
     @Override

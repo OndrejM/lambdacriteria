@@ -10,6 +10,10 @@ public class Path implements Term {
         this.path = path;
     }
 
+    public String getPath() {
+        return path;
+    }
+
     @Override
     public String toString() {
         return "Path{"  + path + '}';

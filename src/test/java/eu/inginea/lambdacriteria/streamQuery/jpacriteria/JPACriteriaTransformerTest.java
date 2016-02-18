@@ -8,7 +8,7 @@ import eu.inginea.lambdacriteria.streamQuery.ruleengine.Constant;
 import eu.inginea.lambdacriteria.streamQuery.*;
 import java.util.*;
 import static java.util.Arrays.asList;
-import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.*;
 import ondrom.experiments.jpa.*;
 import static org.hamcrest.Matchers.*;
 import org.junit.Test;
@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
  * @author ondro
  */
 public class JPACriteriaTransformerTest extends JPATestBase {
-    private JPACriteriaFilterVisitor transformer;
+    private JPACriteriaFilterHandler transformer;
     private List<Term> terms;
 
     public JPACriteriaTransformerTest() {
@@ -35,19 +35,18 @@ public class JPACriteriaTransformerTest extends JPATestBase {
                     new Path("name"));
         });
         when(() -> {
-            terms.stream().forEach(transformer::visit);
+            terms.stream().forEach(transformer::handleToken);
         });
         then(() -> {
-            System.out.println("Built query: " + transformer.getCriteriaQuery());
-            assertThat("criteria query", transformer.getCriteriaQuery(), is(not(nullValue())));
-            assertThat("criteria query string", transformer.getCriteriaQuery().toString(), 
-                    stringContainsInOrder(asList("Ondro", "==", "Parameter",".","name"))
-            );
+            Expression<?> criteriaQuery = transformer.getCriteriaQuery();
+            assertThat("criteria query", criteriaQuery, is(not(nullValue()))); 
+            assertThat("criteria query type", criteriaQuery.getJavaType(), is(equalTo(Boolean.class)));
         });
     }
 
-    private JPACriteriaFilterVisitor personTransformer() {
+    private JPACriteriaFilterHandler personTransformer() {
         CriteriaBuilder cb = getEM().getCriteriaBuilder();
-        return new JPACriteriaFilterVisitor(Person.class, cb, cb.createQuery());
+        CriteriaQuery<Object> q = cb.createQuery();
+        return new JPACriteriaFilterHandler(q.from(Person.class), cb, q);
     }
 }

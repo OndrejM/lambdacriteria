@@ -14,8 +14,13 @@ public class RuleEngine {
         rules.put(literalTypes, action);
     }
     
-    public void addRule(Class<?> literalType, Function<Object, ?> action) {
-        rules.put(asList(literalType), (List<?> l) -> action.apply(l.get(0)));
+    public <LITERAL_TYPE> void addRule(Class<LITERAL_TYPE> literalType, Function<LITERAL_TYPE, ?> action) {
+        rules.put(asList(literalType), new Function<List<?>, Object>() {
+            @Override
+            public Object apply(List<?> l) {
+                return action.apply((LITERAL_TYPE)l.get(0));
+            }
+        });
     }
     
     public void addTerm(Object term) {
