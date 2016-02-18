@@ -9,7 +9,7 @@ import java.util.stream.*;
 import javax.persistence.criteria.*;
 import eu.inginea.lambdacriteria.streamQuery.TokenHandler;
 
-public class JPACriteriaFilterHandler implements TokenHandler {
+public class JPACriteriaFilterHandler<ROOT_ENTITY> implements TokenHandler {
 
     private final RuleEngine engine = new RuleEngine();
     private javax.persistence.criteria.Path<?> rootPath;
@@ -22,7 +22,7 @@ public class JPACriteriaFilterHandler implements TokenHandler {
         engine.addRule(asList(Parameter.class, Path.class), this::concatenatePath);
     }
 
-    public JPACriteriaFilterHandler(javax.persistence.criteria.Path<?> rootPath, CriteriaBuilder cb, CriteriaQuery q) {
+    public JPACriteriaFilterHandler(javax.persistence.criteria.Path<ROOT_ENTITY> rootPath, CriteriaBuilder cb, CriteriaQuery q) {
         this.rootPath = rootPath;
         this.cb = cb;
         this.q = q;

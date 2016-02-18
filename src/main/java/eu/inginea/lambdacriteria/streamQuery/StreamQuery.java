@@ -21,15 +21,18 @@ public class StreamQuery<ROOT_ENTITY> {
     
     private static class JPATransformer<ROOT_ENTITY> implements QueryTransformer<ROOT_ENTITY> {
         private LoggingTransformer loggingTransformer = new LoggingTransformer();
-        private Class<?> rootClass;
+        private Class<ROOT_ENTITY> rootClass;
+        private EntityManager em;
         private CriteriaBuilder cb;
-        private CriteriaQuery q;
+        private CriteriaQuery<ROOT_ENTITY> q;
         private final Root rootPath;
+        private JPACriteriaFilterHandler filterHandler;
 
-        public JPATransformer(Class<?> rootClass, EntityManager em) {
+        public JPATransformer(Class<ROOT_ENTITY> rootClass, EntityManager em) {
             this.rootClass = rootClass;
+            this.em = em;
             cb = em.getCriteriaBuilder();
-            q = cb.createQuery();
+            q = cb.createQuery(rootClass);
             rootPath = q.from(rootClass);
         }
         
@@ -46,12 +49,16 @@ public class StreamQuery<ROOT_ENTITY> {
 
         @Override
         public TokenHandler supplyQueryVisitor() {
-            return new JPACriteriaFilterHandler(rootPath, cb, q);
+            filterHandler = new JPACriteriaFilterHandler(rootPath, cb, q);
+            return filterHandler;
         }
 
         @Override
         public Stream<ROOT_ENTITY> getResults() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            if (filterHandler != null) {
+                q.where(filterHandler.getCriteriaQuery());
+            }
+            return em.createQuery(q).getResultList().stream();
         }
         
     }

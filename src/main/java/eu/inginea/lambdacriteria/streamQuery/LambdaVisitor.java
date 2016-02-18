@@ -128,7 +128,7 @@ class LambdaVisitor extends QueryExpressionVisitor {
 
     @Override
     public Expression visit(ConstantExpression e) {
-        queryVisitor.handleToken(new Constant(e.getValue() + ":" + e.getResultType().getSimpleName()));
+        queryVisitor.handleToken(new Constant(e.getValue()));
         Expression visitResult = super.visit(e);
         return visitResult;
     }
