@@ -1,7 +1,7 @@
-package ondrom.experiments.jpa.entitybuilders;
+package integration.jpa.entitybuilders;
 
-import ondrom.experiments.jpa.LifeEvent;
-import ondrom.experiments.jpa.entitybuilders.EntityBuider;
+import integration.jpa.model.LifeEvent;
+import integration.jpa.entitybuilders.EntityBuider;
 
 public class LifeEventBuilder extends EntityBuider {
 

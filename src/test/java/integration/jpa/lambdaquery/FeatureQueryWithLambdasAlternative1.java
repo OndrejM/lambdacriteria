@@ -1,13 +1,13 @@
-package ondrom.experiments.jpa.lambdaquery;
+package integration.jpa.lambdaquery;
 
-import eu.inginea.lambdacriteria.alternative1.LambdaInMemoryQuery;
+import integration.jpa.lambdaquery.alternative1.LambdaInMemoryQuery;
 import eu.inginea.lambdacriteria.Alias;
 import eu.inginea.lambdacriteria.JpaFunctions;
 import eu.inginea.lambdacriteria.alternative1.Condition;
 import eu.inginea.lambdacriteria.alternative1.LambdaQuery;
 import java.util.List;
-import ondrom.experiments.jpa.LifeEvent;
-import ondrom.experiments.jpa.Person;
+import integration.jpa.model.LifeEvent;
+import integration.jpa.model.Person;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;

@@ -1,4 +1,4 @@
-package ondrom.experiments.jpa.entitybuilders;
+package integration.jpa.entitybuilders;
 
 import javax.persistence.EntityManager;
 

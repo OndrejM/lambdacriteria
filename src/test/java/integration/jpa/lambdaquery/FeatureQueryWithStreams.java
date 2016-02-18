@@ -1,9 +1,9 @@
-package ondrom.experiments.jpa.lambdaquery;
+package integration.jpa.lambdaquery;
 
 import eu.inginea.lambdacriteria.streamQuery.*;
 import java.util.List;
 import java.util.stream.Collectors;
-import ondrom.experiments.jpa.Person;
+import integration.jpa.model.Person;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;

@@ -1,5 +1,6 @@
-package ondrom.experiments.jpa;
+package integration.jpa;
 
+import testbase.JPATestBase;
 import org.junit.Test;
 
 /**

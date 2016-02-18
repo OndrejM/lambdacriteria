@@ -1,7 +1,7 @@
-package ondrom.experiments.jpa.entitybuilders;
+package integration.jpa.entitybuilders;
 
 import java.util.*;
-import ondrom.experiments.jpa.Person;
+import integration.jpa.model.Person;
 
 public class PersonBuilder extends EntityBuider {
 

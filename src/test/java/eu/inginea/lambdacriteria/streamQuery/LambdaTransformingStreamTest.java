@@ -1,21 +1,14 @@
 package eu.inginea.lambdacriteria.streamQuery;
 
-import eu.inginea.lambdacriteria.streamQuery.jpacriteria.JPACriteriaFilterHandler;
-import eu.inginea.lambdacriteria.streamQuery.ruleengine.Term;
-import eu.inginea.lambdacriteria.streamQuery.ruleengine.Path;
-import eu.inginea.lambdacriteria.streamQuery.ruleengine.Parameter;
-import eu.inginea.lambdacriteria.streamQuery.ruleengine.Literal;
-import eu.inginea.lambdacriteria.streamQuery.ruleengine.BinaryOperation;
-import eu.inginea.lambdacriteria.streamQuery.ruleengine.Constant;
-import eu.inginea.lambdacriteria.streamQuery.loggingtransfromer.*;
+import eu.inginea.lambdacriteria.streamQuery.loggingtransfromer.LoggingTransformer;
+import eu.inginea.lambdacriteria.streamQuery.ruleengine.*;
 import java.util.*;
 import java.util.stream.*;
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.*;
-import ondrom.experiments.jpa.*;
+import integration.jpa.model.Person;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import testbase.BDDTestBase;
 
 /**
  *

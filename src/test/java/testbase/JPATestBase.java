@@ -1,4 +1,4 @@
-package ondrom.experiments.jpa;
+package testbase;
 
 import java.text.DateFormat;
 import java.util.Locale;

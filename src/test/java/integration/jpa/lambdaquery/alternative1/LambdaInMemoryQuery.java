@@ -1,12 +1,14 @@
-package eu.inginea.lambdacriteria.alternative1;
+package integration.jpa.lambdaquery.alternative1;
 
 import eu.inginea.lambdacriteria.Alias;
+import eu.inginea.lambdacriteria.alternative1.Condition;
+import eu.inginea.lambdacriteria.alternative1.LambdaQuery;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import ondrom.experiments.jpa.Person;
+import integration.jpa.model.Person;
 
 public class LambdaInMemoryQuery<T> extends LambdaQuery<T> {
 

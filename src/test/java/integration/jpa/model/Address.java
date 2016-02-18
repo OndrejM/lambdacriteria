@@ -1,4 +1,4 @@
-package ondrom.experiments.jpa;
+package integration.jpa.model;
 
 import javax.persistence.*;
 

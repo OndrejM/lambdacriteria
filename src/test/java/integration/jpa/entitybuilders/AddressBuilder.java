@@ -1,6 +1,6 @@
-package ondrom.experiments.jpa.entitybuilders;
+package integration.jpa.entitybuilders;
 
-import ondrom.experiments.jpa.Address;
+import integration.jpa.model.Address;
 
 public class AddressBuilder extends EntityBuider {
     private Address address = new Address();

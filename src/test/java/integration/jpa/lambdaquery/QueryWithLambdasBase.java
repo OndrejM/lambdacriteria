@@ -1,4 +1,4 @@
-package ondrom.experiments.jpa.lambdaquery;
+package integration.jpa.lambdaquery;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -7,11 +7,11 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
-import ondrom.experiments.jpa.JPATestBase;
-import ondrom.experiments.jpa.Person;
-import static ondrom.experiments.jpa.entitybuilders.AddressBuilder.anAddress;
-import static ondrom.experiments.jpa.entitybuilders.LifeEventBuilder.*;
-import static ondrom.experiments.jpa.entitybuilders.PersonBuilder.aPerson;
+import testbase.JPATestBase;
+import integration.jpa.model.Person;
+import static integration.jpa.entitybuilders.AddressBuilder.anAddress;
+import static integration.jpa.entitybuilders.LifeEventBuilder.*;
+import static integration.jpa.entitybuilders.PersonBuilder.aPerson;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 

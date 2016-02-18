@@ -1,4 +1,4 @@
-package ondrom.experiments.jpa.lambdaquery;
+package integration.jpa.lambdaquery;
 
 import eu.inginea.lambdacriteria.base.LoggingQueryExpressionVisitor;
 import eu.inginea.lambdacriteria.base.QueryExpressionVisitor;
@@ -15,7 +15,7 @@ import java.io.Serializable;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import ondrom.experiments.jpa.Person;
+import integration.jpa.model.Person;
 import org.junit.Test;
 
 /**

@@ -1,4 +1,4 @@
-package ondrom.experiments.jpa;
+package integration.jpa.model;
 
 import java.util.Date;
 import javax.persistence.Embeddable;

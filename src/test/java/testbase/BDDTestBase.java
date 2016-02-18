@@ -1,4 +1,4 @@
-package ondrom.experiments.jpa;
+package testbase;
 
 public interface BDDTestBase {
 
