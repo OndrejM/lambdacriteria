@@ -9,6 +9,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 import ondrom.experiments.jpa.JPATestBase;
 import ondrom.experiments.jpa.Person;
+import static ondrom.experiments.jpa.entitybuilders.AddressBuilder.anAddress;
 import static ondrom.experiments.jpa.entitybuilders.LifeEventBuilder.*;
 import static ondrom.experiments.jpa.entitybuilders.PersonBuilder.aPerson;
 import static org.hamcrest.Matchers.*;
@@ -18,6 +19,7 @@ public class QueryWithLambdasBase extends JPATestBase {
 
     protected void preparePersons() {
         final List<String> PERSON_NAMES = Arrays.asList("Ondro", "Janka", "Julia");
+        final List<String> PERSON_CITIES = Arrays.asList("Nitra", "Praha", "Brno");
         final List<String> PERSON_HAIR_COLORS = Arrays.asList("black", "blond", "blond");
         final List<String> PERSON_EVENT_PLACE = Arrays.asList("Praha", "Madrid", "Madrid");
 
@@ -29,13 +31,16 @@ public class QueryWithLambdasBase extends JPATestBase {
                     .executeUpdate();
             // fill DB data
             Iterator<String> itNames = PERSON_NAMES.iterator();
+            Iterator<String> itCities = PERSON_CITIES.iterator();
             Iterator<String> itColors = PERSON_HAIR_COLORS.iterator();
             Iterator<String> itPlaces = PERSON_EVENT_PLACE.iterator();
             while (itNames.hasNext() 
+                    && itCities.hasNext()
                     && itColors.hasNext()
                     && itPlaces.hasNext()) {
                 aPerson()
                     .withName(itNames.next())
+                    .withAddress(anAddress().withCity(itCities.next()))
                     .withHairColor(itColors.next())
                     .withLifeEvent(aLifeEvent().withPlace(itPlaces.next()))
                     .existsIn(getEM());
@@ -49,6 +54,13 @@ public class QueryWithLambdasBase extends JPATestBase {
     protected void canQueryPersonByNameUsingJPQL() {
         List<Person> persons = getEM().createQuery("select p from Person p where p.name = :name", Person.class)
                 .setParameter("name", "Ondro")
+                .getResultList();
+        isValidPersonByName(persons, 1);
+    }
+    
+    protected void canQueryPersonByCityUsingJPQL() {
+        List<Person> persons = getEM().createQuery("select p from Person p join p.address a where a.city = :city", Person.class)
+                .setParameter("city", "Nitra")
                 .getResultList();
         isValidPersonByName(persons, 1);
     }
@@ -122,5 +134,5 @@ public class QueryWithLambdasBase extends JPATestBase {
     protected void isValidPersonByNameGroupByLifeEventPlace(List<String> places) {
         assertThat("List of places matching criteria", places, is(iterableWithSize( 1 )));
     }
-    
+
 }

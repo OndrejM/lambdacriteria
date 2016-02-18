@@ -42,5 +42,25 @@ public class FeatureQueryWithStreams extends QueryWithLambdasBase {
             assertThat("List of persons matching criteria", persons, is(iterableWithSize( 1 )));
         });
     }
+
+    @Test
+    @Override
+    public void canQueryPersonByCityUsingJPQL() {
+        super.canQueryPersonByCityUsingJPQL();
+    }
+    
+    @Test
+    public void canQueryPersonByCityUsingStream() {
+        when(() -> {
+            persons = new StreamQuery<Person>(getEM())
+                .from(Person.class)
+                .filter((p) -> "Nitra".equals(p.getAddress().getCity()))
+                .collect(Collectors.toList());
+        });
+        then(() -> {
+            assertThat("List of persons matching criteria", persons, is(not(empty())));
+            assertThat("List of persons matching criteria", persons, is(iterableWithSize( 1 )));
+        });
+    }
     
 }

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
+import static javax.persistence.CascadeType.ALL;
 
 @Entity
 @NamedQuery(name = Person.FindAllLeByName.QName, query = "select le from Person p, in (p.lifeEvents) le where le.place = ?1")
@@ -23,7 +24,7 @@ public class Person {
     private String name;
     private String hairColor;
     
-    @OneToOne
+    @OneToOne(cascade = ALL)
     private Address address;
     
     @ElementCollection

@@ -1,9 +1,6 @@
 package ondrom.experiments.jpa.entitybuilders;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import ondrom.experiments.jpa.Person;
 
 public class PersonBuilder extends EntityBuider {
@@ -11,6 +8,7 @@ public class PersonBuilder extends EntityBuider {
     private Person person = new Person();
     private Map<String, LifeEventBuilder> leBuilders = new HashMap<>();
     private List<LifeEventBuilder> leListBuilders = new ArrayList<>();
+    private Optional<AddressBuilder> addressBuilder = Optional.empty();
     
     public static PersonBuilder aPerson() {
         return new PersonBuilder();
@@ -36,6 +34,7 @@ public class PersonBuilder extends EntityBuider {
         leListBuilders.forEach(e -> {
             person.getLifeEventList().add(e.build());
         });
+        addressBuilder.ifPresent(builder -> person.setAddress(builder.build()));
         return person;
     }
 
@@ -46,6 +45,11 @@ public class PersonBuilder extends EntityBuider {
 
     public PersonBuilder withHairColor(String color) {
         person.setHairColor(color);
+        return this;
+    }
+    
+    public PersonBuilder withAddress(AddressBuilder builder) {
+        addressBuilder = Optional.of(builder);
         return this;
     }
     
