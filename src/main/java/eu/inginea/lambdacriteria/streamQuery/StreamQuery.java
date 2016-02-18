@@ -1,9 +1,12 @@
 package eu.inginea.lambdacriteria.streamQuery;
 
+import eu.inginea.lambdacriteria.streamQuery.jpacriteria.JPACriteriaFilterVisitor;
 import eu.inginea.lambdacriteria.streamQuery.loggingtransfromer.LoggingTransformer;
+import java.util.stream.Stream;
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.*;
 
-public class StreamQuery<T> {
+public class StreamQuery<ROOT_ENTITY> {
 
     private final EntityManager em;
 
@@ -11,15 +14,44 @@ public class StreamQuery<T> {
         this.em = em;
     }
 
-    public QueryStream<T> from(Class<T> aClass) {
-        // stub implementation doing everything in memory
+    public QueryStream<ROOT_ENTITY> from(Class<ROOT_ENTITY> aClass) {
         String entityName = em.getMetamodel().entity(aClass).getName();
-        LoggingTransformer transformer = new LoggingTransformer();
-        return new LambdaTransformingStream<>((StreamOperation op) -> new LambdaVisitor(op),
-                () -> transformer,
-                () -> transformer,
-                transformer::executeQuery
-        );
+        return new LambdaTransformingStream<>(new JPATransformer<ROOT_ENTITY>(aClass, em));
+    }
+    
+    private static class JPATransformer<ROOT_ENTITY> implements QueryTransformer<ROOT_ENTITY> {
+        private LoggingTransformer loggingTransformer = new LoggingTransformer();
+        private Class<?> rootClass;
+        private CriteriaBuilder cb;
+        private CriteriaQuery q;
+
+        public JPATransformer(Class<?> rootClass, EntityManager em) {
+            this.rootClass = rootClass;
+            cb = em.getCriteriaBuilder();
+            q = cb.createQuery();
+        }
+        
+        @Override
+        public LambdaVisitor supplyLambdaVisitor(StreamOperation op) {
+            return new LambdaVisitor(op);
+        }
+
+        @Override
+        public QueryMapping supplyMapping() {
+                // TODO put mapping to JPA specific class, or generalize
+            return loggingTransformer;
+        }
+
+        @Override
+        public QueryVisitor supplyQueryVisitor() {
+            return new JPACriteriaFilterVisitor(rootClass, cb, q);
+        }
+
+        @Override
+        public Stream<ROOT_ENTITY> getResults() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+        
     }
 
 }

@@ -12,11 +12,11 @@ class LambdaTransformingStream<ROOT> implements QueryStream<ROOT> {
     private final Supplier<? extends QueryVisitor> queryVisitorSupplier;
     private Supplier<Stream<ROOT>> executeQuery;
 
-    public LambdaTransformingStream(Function<StreamOperation, ? extends LambdaVisitor> lambdaVisitorSupplier, Supplier<? extends QueryMapping> queryMappingSupplier, Supplier<? extends QueryVisitor> queryVisitorSupplier, Supplier<Stream<ROOT>> executeQuery) {
-        this.lambdaVisitorSupplier = lambdaVisitorSupplier;
-        this.queryMappingSupplier = queryMappingSupplier;
-        this.queryVisitorSupplier = queryVisitorSupplier;
-        this.executeQuery = executeQuery;
+    public LambdaTransformingStream(QueryTransformer<ROOT> transformer) {
+        this.lambdaVisitorSupplier = transformer::supplyLambdaVisitor;
+        this.queryMappingSupplier = transformer::supplyMapping;
+        this.queryVisitorSupplier = transformer::supplyQueryVisitor;
+        this.executeQuery = transformer::getResults;
     }
 
     @Override

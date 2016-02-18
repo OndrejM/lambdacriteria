@@ -1,8 +1,17 @@
 package eu.inginea.lambdacriteria.streamQuery;
 
+import eu.inginea.lambdacriteria.streamQuery.jpacriteria.JPACriteriaFilterVisitor;
+import eu.inginea.lambdacriteria.streamQuery.ruleengine.Term;
+import eu.inginea.lambdacriteria.streamQuery.ruleengine.Path;
+import eu.inginea.lambdacriteria.streamQuery.ruleengine.Parameter;
+import eu.inginea.lambdacriteria.streamQuery.ruleengine.Literal;
+import eu.inginea.lambdacriteria.streamQuery.ruleengine.BinaryOperation;
+import eu.inginea.lambdacriteria.streamQuery.ruleengine.Constant;
 import eu.inginea.lambdacriteria.streamQuery.loggingtransfromer.*;
 import java.util.*;
 import java.util.stream.*;
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.*;
 import ondrom.experiments.jpa.*;
 import static org.hamcrest.Matchers.*;
 import org.junit.Test;
@@ -78,17 +87,34 @@ public class LambdaTransformingStreamTest implements BDDTestBase {
     }
     private static final int SIZE = 2;
 
-    private <ENTITY> LambdaTransformingStream<ENTITY> from(Class<ENTITY> entityClass) {
-        return new LambdaTransformingStream<>(
-                (StreamOperation op) -> new InspectingLambdaVisitor(op),
-                () -> transformer,
-                () -> transformer,
-                () -> {
-                    ArrayList<ENTITY> list = new ArrayList<>();
-                    IntStream.range(0, SIZE).forEach(i -> list.add(null));
-                    return list.stream();
-                }
-        );
+    private <ROOT_ENTITY> LambdaTransformingStream<ROOT_ENTITY> from(Class<ROOT_ENTITY> entityClass) {
+        return new LambdaTransformingStream<>(new TestTransformer<ROOT_ENTITY>());
+    }
+
+    private class TestTransformer<ROOT_ENTITY> implements QueryTransformer<ROOT_ENTITY> {
+
+        @Override
+        public LambdaVisitor supplyLambdaVisitor(StreamOperation op) {
+            return new InspectingLambdaVisitor(op);
+        }
+
+        @Override
+        public QueryMapping supplyMapping() {
+            return transformer;
+        }
+
+        @Override
+        public QueryVisitor supplyQueryVisitor() {
+            return transformer;
+        }
+
+        @Override
+        public Stream<ROOT_ENTITY> getResults() {
+            ArrayList<ROOT_ENTITY> list = new ArrayList<>();
+            IntStream.range(0, SIZE).forEach(i -> list.add(null));
+            return list.stream();
+        }
+
     }
 
     private static class InspectingLambdaVisitor extends LambdaVisitor {

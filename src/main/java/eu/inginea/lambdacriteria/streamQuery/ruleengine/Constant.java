@@ -1,20 +1,18 @@
-package eu.inginea.lambdacriteria.streamQuery;
+package eu.inginea.lambdacriteria.streamQuery.ruleengine;
 
-import java.util.Objects;
+public class Constant implements Term {
 
-public class Path implements Term {
-
-    private final String path;
+    private final String value;
     
-    public Path(String path) {
-        this.path = path;
+    public Constant(String value) {
+        this.value = value;
     }
 
     @Override
     public String toString() {
-        return "Path{"  + path + '}';
+        return "Constant{" + value + '}';
     }
-
+    
     @Override
     public boolean equals(Object obj) {
         return equalsFromToString(obj);

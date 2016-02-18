@@ -1,4 +1,4 @@
-package eu.inginea.lambdacriteria.streamQuery;
+package eu.inginea.lambdacriteria.streamQuery.ruleengine;
 
 public class Parameter implements Term {
 

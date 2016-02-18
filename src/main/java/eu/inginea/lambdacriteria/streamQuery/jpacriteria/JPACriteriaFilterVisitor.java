@@ -1,26 +1,30 @@
 package eu.inginea.lambdacriteria.streamQuery.jpacriteria;
 
-import eu.inginea.lambdacriteria.streamQuery.*;
-import eu.inginea.lambdacriteria.streamQuery.Path;
-import eu.inginea.lambdacriteria.streamQuery.ruleengine.RuleEngine;
-import java.util.*;
+import eu.inginea.lambdacriteria.streamQuery.QueryVisitor;
+import eu.inginea.lambdacriteria.streamQuery.ruleengine.Path;
+import eu.inginea.lambdacriteria.streamQuery.ruleengine.*;
 import static java.util.Arrays.asList;
-import java.util.function.Function;
+import java.util.*;
 import java.util.stream.*;
-import static java.util.stream.Collectors.toList;
 import javax.persistence.criteria.*;
 
 public class JPACriteriaFilterVisitor implements QueryVisitor {
 
-    private static final RuleEngine engine = new RuleEngine();
+    private final RuleEngine engine = new RuleEngine();
     private Class<?> rootClass;
+    private CriteriaBuilder cb;
+    private CriteriaQuery q;
 
-    static {
+    {
         engine.addRule(Constant.class, c -> new StubExpression(c));
         engine.addRule(asList(Expression.class, BinaryOperation.class, Expression.class), JPACriteriaFilterVisitor::concatenate);
         engine.addRule(asList(Parameter.class, Path.class), JPACriteriaFilterVisitor::concatenatePath);
     }
 
+    public Expression constantToExpression(Constant c) {
+        return new StubExpression(c);
+    }
+    
     public static Expression concatenate(List<?> expList) {
         return new StubExpression(expList);
     }
@@ -28,9 +32,11 @@ public class JPACriteriaFilterVisitor implements QueryVisitor {
     public static Expression concatenatePath(List<?> expList) {
         return new StubExpression(expList, " . ");
     }
-
-    public JPACriteriaFilterVisitor(Class<?> rootClass) {
+    
+    public JPACriteriaFilterVisitor(Class<?> rootClass, CriteriaBuilder cb, CriteriaQuery q) {
         this.rootClass = rootClass;
+        this.cb = cb;
+        this.q = q;
     }
 
     @Override

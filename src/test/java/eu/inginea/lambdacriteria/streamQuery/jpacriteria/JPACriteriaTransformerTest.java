@@ -1,8 +1,14 @@
 package eu.inginea.lambdacriteria.streamQuery.jpacriteria;
 
+import eu.inginea.lambdacriteria.streamQuery.ruleengine.Term;
+import eu.inginea.lambdacriteria.streamQuery.ruleengine.Path;
+import eu.inginea.lambdacriteria.streamQuery.ruleengine.Parameter;
+import eu.inginea.lambdacriteria.streamQuery.ruleengine.BinaryOperation;
+import eu.inginea.lambdacriteria.streamQuery.ruleengine.Constant;
 import eu.inginea.lambdacriteria.streamQuery.*;
 import java.util.*;
 import static java.util.Arrays.asList;
+import javax.persistence.criteria.CriteriaBuilder;
 import ondrom.experiments.jpa.*;
 import static org.hamcrest.Matchers.*;
 import org.junit.Test;
@@ -12,7 +18,7 @@ import static org.junit.Assert.*;
  *
  * @author ondro
  */
-public class JPACriteriaTransformerTest implements BDDTestBase {
+public class JPACriteriaTransformerTest extends JPATestBase {
     private JPACriteriaFilterVisitor transformer;
     private List<Term> terms;
 
@@ -22,7 +28,7 @@ public class JPACriteriaTransformerTest implements BDDTestBase {
     @Test
     public void can_build_criteria_for_simple_term_expression() {
         given(() -> {
-            transformer = new JPACriteriaFilterVisitor(Person.class);
+            transformer = personTransformer();
             terms = Arrays.asList(new Constant("Ondro:String"),
                     BinaryOperation.EQUAL,
                     new Parameter(0),
@@ -38,5 +44,10 @@ public class JPACriteriaTransformerTest implements BDDTestBase {
                     stringContainsInOrder(asList("Ondro", "==", "Parameter",".","name"))
             );
         });
+    }
+
+    private JPACriteriaFilterVisitor personTransformer() {
+        CriteriaBuilder cb = getEM().getCriteriaBuilder();
+        return new JPACriteriaFilterVisitor(Person.class, cb, cb.createQuery());
     }
 }

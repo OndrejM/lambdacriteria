@@ -1,5 +1,9 @@
 package eu.inginea.lambdacriteria.streamQuery;
 
+import eu.inginea.lambdacriteria.streamQuery.ruleengine.Path;
+import eu.inginea.lambdacriteria.streamQuery.ruleengine.Parameter;
+import eu.inginea.lambdacriteria.streamQuery.ruleengine.Literal;
+import eu.inginea.lambdacriteria.streamQuery.ruleengine.Constant;
 import com.trigersoft.jaque.expression.*;
 import com.trigersoft.jaque.expression.Expression;
 import com.trigersoft.jaque.expression.ParameterExpression;

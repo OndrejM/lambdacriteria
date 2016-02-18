@@ -1,4 +1,4 @@
-package eu.inginea.lambdacriteria.streamQuery;
+package eu.inginea.lambdacriteria.streamQuery.ruleengine;
 
 import java.util.Objects;
 

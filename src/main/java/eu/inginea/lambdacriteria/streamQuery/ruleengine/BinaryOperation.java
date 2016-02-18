@@ -1,7 +1,6 @@
-package eu.inginea.lambdacriteria.streamQuery;
+package eu.inginea.lambdacriteria.streamQuery.ruleengine;
 
 import com.trigersoft.jaque.expression.ExpressionType;
-import eu.inginea.lambdacriteria.streamQuery.Literal;
 
 public enum BinaryOperation implements Literal {
 

@@ -1,5 +1,8 @@
 package eu.inginea.lambdacriteria.streamQuery.loggingtransfromer;
 
+import eu.inginea.lambdacriteria.streamQuery.ruleengine.Term;
+import eu.inginea.lambdacriteria.streamQuery.ruleengine.Literal;
+import eu.inginea.lambdacriteria.streamQuery.ruleengine.BinaryOperation;
 import com.trigersoft.jaque.expression.ExpressionType;
 import eu.inginea.lambdacriteria.streamQuery.*;
 import java.lang.reflect.Method;
