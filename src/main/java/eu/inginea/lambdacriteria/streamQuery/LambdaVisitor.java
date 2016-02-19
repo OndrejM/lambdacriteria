@@ -16,7 +16,7 @@ import java.util.logging.*;
 /**
  * In final version, can extend QueryExpressionVisitor directly to avoid debug logging
  */
-class LambdaVisitor extends QueryExpressionVisitor {
+public class LambdaVisitor extends QueryExpressionVisitor {
     
     private QueryMapping queryMapping;
     private TokenHandler queryVisitor;
@@ -29,7 +29,7 @@ class LambdaVisitor extends QueryExpressionVisitor {
     public LambdaVisitor() {
     }
 
-    LambdaVisitor(StreamOperation streamOperation) {
+    public LambdaVisitor(StreamOperation streamOperation) {
     }
 
     @Override

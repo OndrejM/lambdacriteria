@@ -93,8 +93,7 @@ public class FeatureQueryWithLambdasAlternative1 extends QueryWithLambdasBase {
     @Test
     public void canQueryPersonByNameUsingLambdasInMemory() {
         given(() -> {
-            allPersons = getEM().createQuery("select p from Person p", Person.class)
-                    .getResultList();
+            allPersons = getAllPersons();
         });
 
         when(() -> {

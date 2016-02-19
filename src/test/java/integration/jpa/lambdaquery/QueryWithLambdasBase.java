@@ -34,16 +34,16 @@ public class QueryWithLambdasBase extends JPATestBase {
             Iterator<String> itCities = PERSON_CITIES.iterator();
             Iterator<String> itColors = PERSON_HAIR_COLORS.iterator();
             Iterator<String> itPlaces = PERSON_EVENT_PLACE.iterator();
-            while (itNames.hasNext() 
+            while (itNames.hasNext()
                     && itCities.hasNext()
                     && itColors.hasNext()
                     && itPlaces.hasNext()) {
                 aPerson()
-                    .withName(itNames.next())
-                    .withAddress(anAddress().withCity(itCities.next()))
-                    .withHairColor(itColors.next())
-                    .withLifeEvent(aLifeEvent().withPlace(itPlaces.next()))
-                    .existsIn(getEM());
+                        .withName(itNames.next())
+                        .withAddress(anAddress().withCity(itCities.next()))
+                        .withHairColor(itColors.next())
+                        .withLifeEvent(aLifeEvent().withPlace(itPlaces.next()))
+                        .existsIn(getEM());
             }
             commitTx();
             reopenEM();
@@ -57,14 +57,14 @@ public class QueryWithLambdasBase extends JPATestBase {
                 .getResultList();
         isValidPersonByName(persons, 1);
     }
-    
+
     protected void canQueryPersonByCityUsingJPQL() {
         List<Person> persons = getEM().createQuery("select p from Person p join p.address a where a.city = :city", Person.class)
                 .setParameter("city", "Nitra")
                 .getResultList();
         isValidPersonByName(persons, 1);
     }
-    
+
     protected void canQueryPersonByNameUsingCriteria() {
         CriteriaBuilder cb = getEM().getCriteriaBuilder();
         CriteriaQuery<Person> q = cb.createQuery(Person.class);
@@ -77,19 +77,19 @@ public class QueryWithLambdasBase extends JPATestBase {
     }
 
     protected void isValidPersonByName(List<Person> persons, int size) {
-        assertThat("List of persons", persons, allOf(is(iterableWithSize(size)), 
+        assertThat("List of persons", persons, allOf(is(iterableWithSize(size)),
                 everyItem(is(instanceOf(Person.class)))
         ));
     }
-    
+
     protected void canQueryPersonByNameGroupByHairColorUsingJPQL() {
-        List<String> colors = getEM().createQuery("select p.hairColor from Person p where p.name like :name group by p.hairColor", 
+        List<String> colors = getEM().createQuery("select p.hairColor from Person p where p.name like :name group by p.hairColor",
                 String.class)
                 .setParameter("name", "J%")
                 .getResultList();
         isValidPersonByNameGroupByHairColor(colors);
     }
-    
+
     protected void canQueryPersonByNameGroupByHairColorUsingCriteria() {
         CriteriaBuilder cb = getEM().getCriteriaBuilder();
         CriteriaQuery<String> q = cb.createQuery(String.class);
@@ -105,12 +105,12 @@ public class QueryWithLambdasBase extends JPATestBase {
 
     protected void isValidPersonByNameGroupByHairColor(List<String> colors) {
         assertThat("List of hairColors", colors, allOf(
-                is(iterableWithSize( 1 )), everyItem(is(instanceOf(String.class)))
+                is(iterableWithSize(1)), everyItem(is(instanceOf(String.class)))
         ));
     }
-    
+
     protected void canQueryPersonByNameGroupByLifeEventPlaceUsingJPQL() {
-        List<String> places = getEM().createQuery("select le.place from Person p join p.lifeEventList le where p.name like :name group by le.place", 
+        List<String> places = getEM().createQuery("select le.place from Person p join p.lifeEventList le where p.name like :name group by le.place",
                 String.class)
                 .setParameter("name", "J%")
                 .getResultList();
@@ -132,7 +132,11 @@ public class QueryWithLambdasBase extends JPATestBase {
     }
 
     protected void isValidPersonByNameGroupByLifeEventPlace(List<String> places) {
-        assertThat("List of places matching criteria", places, is(iterableWithSize( 1 )));
+        assertThat("List of places matching criteria", places, is(iterableWithSize(1)));
+    }
+
+    protected List<Person> getAllPersons() {
+        return getEM().createQuery("select p from Person p", Person.class).getResultList();
     }
 
 }

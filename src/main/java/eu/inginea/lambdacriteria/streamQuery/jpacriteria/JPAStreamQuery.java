@@ -1,16 +1,24 @@
-package eu.inginea.lambdacriteria.streamQuery;
+package eu.inginea.lambdacriteria.streamQuery.jpacriteria;
 
+import eu.inginea.lambdacriteria.streamQuery.LambdaTransformingStream;
+import eu.inginea.lambdacriteria.streamQuery.LambdaVisitor;
+import eu.inginea.lambdacriteria.streamQuery.QueryMapping;
+import eu.inginea.lambdacriteria.streamQuery.api.QueryStream;
+import eu.inginea.lambdacriteria.streamQuery.QueryTransformer;
+import eu.inginea.lambdacriteria.streamQuery.StreamOperation;
+import eu.inginea.lambdacriteria.streamQuery.TokenHandler;
 import eu.inginea.lambdacriteria.streamQuery.jpacriteria.JPACriteriaFilterHandler;
 import eu.inginea.lambdacriteria.streamQuery.loggingtransfromer.LoggingTransformer;
 import java.util.stream.Stream;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.*;
 
-public class StreamQuery<ROOT_ENTITY> {
+// TODO generalize to use any grammar, not depend on entity manager
+public class JPAStreamQuery<ROOT_ENTITY> {
 
     private final EntityManager em;
 
-    public StreamQuery(EntityManager em) {
+    public JPAStreamQuery(EntityManager em) {
         this.em = em;
     }
 

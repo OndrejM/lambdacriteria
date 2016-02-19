@@ -16,9 +16,10 @@ public abstract class JPATestBase implements BDDTestBase {
         return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, new Locale("SK"));
     }
 
+    private EntityManagerFactory emf = Persistence.createEntityManagerFactory(PU_NAME);
+    
     protected synchronized EntityManager getEM() {
         if (em == null) {
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(PU_NAME);
             emf.getCache().evictAll();
             em = emf.createEntityManager();
         }

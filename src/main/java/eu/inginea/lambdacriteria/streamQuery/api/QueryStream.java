@@ -1,5 +1,6 @@
-package eu.inginea.lambdacriteria.streamQuery;
+package eu.inginea.lambdacriteria.streamQuery.api;
 
+import eu.inginea.lambdacriteria.streamQuery.QueryPredicate;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
@@ -20,11 +21,20 @@ public interface QueryStream<T> {
         return null;
     }
 
-    default <R, A> List<?> collectSelection(Collector<? super T, A, R> collector) {
+    default QueryStream<T> distinct() {
         return null;
     }
-    
+
+    default QueryStream<T> distinct(Function<T, ?> selector) {
+        return null;
+    }
+
     default QueryStream<T> join(BiFunction<T, Util,? extends QueryStream<?>> mapper) {
+        return null;
+    }
+
+    // changes to normal stream of objects supplied by the underlying query, it is a terminal operation resulting into in-memory stream
+    default Stream<List<?>> mapToSelection() {
         return null;
     }
     
