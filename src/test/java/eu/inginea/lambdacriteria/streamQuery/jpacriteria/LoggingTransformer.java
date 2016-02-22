@@ -1,10 +1,9 @@
-package eu.inginea.lambdacriteria.streamQuery.loggingtransfromer;
+package eu.inginea.lambdacriteria.streamQuery.jpacriteria;
 
-import eu.inginea.lambdacriteria.streamQuery.ruleengine.Term;
-import eu.inginea.lambdacriteria.streamQuery.ruleengine.Literal;
-import eu.inginea.lambdacriteria.streamQuery.ruleengine.BinaryOperation;
 import com.trigersoft.jaque.expression.ExpressionType;
 import eu.inginea.lambdacriteria.streamQuery.*;
+import eu.inginea.lambdacriteria.streamQuery.ruleengine.Literal;
+import eu.inginea.lambdacriteria.streamQuery.ruleengine.*;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Stream;
@@ -12,7 +11,7 @@ import java.util.stream.Stream;
 /**
  * Describes transformations from lambda expressions in query stream to final query like JPQL or Criteria
  */
-public class LoggingTransformer implements QueryMapping, TokenHandler, ExecuteQuery {
+public class LoggingTransformer extends FilterExpressionMapping implements TokenHandler, ExecuteQuery {
     private final Map<Object,Literal> literalsMap = new HashMap<>();
     private final Collection<LiteralMapper> literalMappers = new ArrayList<>();
     

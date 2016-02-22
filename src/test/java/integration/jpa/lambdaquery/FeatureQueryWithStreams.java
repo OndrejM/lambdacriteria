@@ -1,7 +1,8 @@
 package integration.jpa.lambdaquery;
 
 import eu.inginea.lambdacriteria.streamQuery.jpacriteria.JPAStreamQuery;
-import eu.inginea.lambdacriteria.streamQuery.*;
+import eu.inginea.lambdacriteria.streamQuery.api.QueryStream;
+import eu.inginea.lambdacriteria.streamQuery.memory.InMemoryStreamQuery;
 import java.util.List;
 import java.util.stream.Collectors;
 import integration.jpa.model.Person;
@@ -20,7 +21,8 @@ import org.junit.Before;
  * Tests to do:
  * <dl>
  * <dt>GROUP BY</dt>
- * <dd>new method like sorted? distinct() is enough? Possibly map to array of objects?</dd>
+ * <dd>new method like sorted? distinct() is enough? Possibly map to array of
+ * objects?</dd>
  * <dt>DISTINCT</dt>
  * <dd>distinct() - as select() but with distinct values</dd>
  * <dt>JOIN collection</dt>
@@ -32,7 +34,8 @@ import org.junit.Before;
  * <dt>Operators (BETWEEN, LIKE, ...)</dt>
  * <dd></dd>
  * <dt>SELECT</dt>
- * <dd>collect, forEach - terminal operations, peek (with function instead of consumer)?</dd>
+ * <dd>collect, forEach - terminal operations, peek (with function instead of
+ * consumer)?</dd>
  * <dt>Parameters</dt>
  * <dd>detect variables defined outside of the lambda expression?</dd>
  * <dt>LIMIT</dt>
@@ -66,24 +69,22 @@ public class FeatureQueryWithStreams extends QueryWithLambdasBase {
     }
 
     @Test
-    public void canQueryPersonByNameUsingStream() {
-        when(() -> {
-            persons = new JPAStreamQuery<Person>(getEM())
-                    .from(Person.class)
-                    .filter(p -> "Ondro".equals(p.getName()))
-                    .collect(Collectors.toList());
-        });
-        then(() -> {
-            assertThat("List of persons matching criteria", persons, is(not(empty())));
-            assertThat("List of persons matching criteria", persons, is(iterableWithSize(1)));
-        });
+    public void canQueryPersonByNameUsingJPAStream() {
+        canQueryPersonByNameUsingSuppliedStream(aPersonJPAStream());
     }
 
     @Test
     public void canQueryPersonByNameUsingStreamInMemory() {
+        canQueryPersonByNameUsingSuppliedStream(aPersonInMemoryStream());
+    }
+
+    private QueryStream<Person> aPersonInMemoryStream() {
+        return new InMemoryStreamQuery().from(getAllPersons().stream());
+    }
+
+    private void canQueryPersonByNameUsingSuppliedStream(QueryStream<Person> stream) {
         when(() -> {
-            persons = new JPAStreamQuery<Person>(getEM())
-                    .from(Person.class)
+            persons = stream
                     .filter(p -> "Ondro".equals(p.getName()))
                     .collect(Collectors.toList());
         });
@@ -100,10 +101,22 @@ public class FeatureQueryWithStreams extends QueryWithLambdasBase {
     }
 
     @Test
-    public void canQueryPersonByCityUsingStream() {
+    public void canQueryPersonByCityUsingJPAStream() {
+        canQueryPersonByCityUsingSuppliedStream(aPersonJPAStream());
+    }
+
+    private QueryStream<Person> aPersonJPAStream() {
+        return new JPAStreamQuery(getEM()).from(Person.class);
+    }
+
+    @Test
+    public void canQueryPersonByCityUsingStreamInMemory() {
+        canQueryPersonByCityUsingSuppliedStream(aPersonInMemoryStream());
+    }
+
+    private void canQueryPersonByCityUsingSuppliedStream(QueryStream<Person> stream) {
         when(() -> {
-            persons = new JPAStreamQuery<Person>(getEM())
-                    .from(Person.class)
+            persons = stream
                     .filter(p -> "Nitra".equals(p.getAddress().getCity()))
                     .collect(Collectors.toList());
         });
@@ -112,15 +125,15 @@ public class FeatureQueryWithStreams extends QueryWithLambdasBase {
             assertThat("List of persons matching criteria", persons, is(iterableWithSize(1)));
         });
     }
-    
+
     /**
-     * Example of API to handle all possible JPA query options, which make sense in single query
+     * Example of API to handle all possible JPA query options, which make sense
+     * in single query
      */
     @Test
     public void canParseVeryComplexQuery() {
         when(() -> {
-            List<?> result = new JPAStreamQuery<Person>(getEM())
-                    .from(Person.class)
+            List<List<?>> result = aPersonJPAStream()
                     .filter((p) -> "Nitra".equals(p.getAddress().getCity()))
                     .select() // add person entity to select clause
                     .select(p -> p.getName()) // add person name to select clause
@@ -128,28 +141,31 @@ public class FeatureQueryWithStreams extends QueryWithLambdasBase {
                     // join with filter and select on joined entity. Probably will need custom conversion 
                     // to QueryStream insteda of stream, as lambdas in filter must be serializable
                     .join((p, util) -> {
-                            return util.toStream(p.getLifeEventList())
-                            .filter(le -> le.getPlace() == p.getAddress().getCity())
-                            .select();
+                        return util.toStream(p.getLifeEventList())
+                                .filter(le -> le.getPlace() == p.getAddress().getCity())
+                                .select();
                     })
-                    .collect(Collectors.toList());
+                    // choose selected values and collect - only necessary if we want to have more than single entity in result
+                    .mapToSelection()
+                    // alternatively map() with expression as in select to change to different type in result
+                    // without map operation, root entity is in result
+                    .collect(Collectors.toList()); // collect on lists -> result is list of lists
         });
     }
 
     @Test
     public void canParseVeryComplexQueryWithAggregation() {
         when(() -> {
-            List<List<?>> result = new JPAStreamQuery<Person>(getEM())
-                    .from(Person.class)
+            List<List<?>> result = aPersonJPAStream()
                     .filter((p) -> "Nitra".equals(p.getAddress().getCity()))
                     .select() // add person entity to select clause
                     .distinct(p -> p.getAddress()) // group by address -> select persons and their distinct addresses
                     // join with filter and select on joined entity. Probably will need custom conversion 
                     // to QueryStream insteda of stream, as lambdas in filter must be serializable
                     .join((p, util) -> {
-                            return util.toStream(p.getLifeEventList())
-                            .filter(le -> le.getPlace() == p.getAddress().getCity())
-                            .select();
+                        return util.toStream(p.getLifeEventList())
+                                .filter(le -> le.getPlace() == p.getAddress().getCity())
+                                .select();
                     })
                     // choose selected values and collect - only necessary if we want to have more than single entity in result
                     .mapToSelection()

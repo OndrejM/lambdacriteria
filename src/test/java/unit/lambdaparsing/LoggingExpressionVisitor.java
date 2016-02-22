@@ -1,4 +1,4 @@
-package eu.inginea.lambdacriteria.streamQuery;
+package unit.lambdaparsing;
 
 import com.trigersoft.jaque.expression.BinaryExpression;
 import com.trigersoft.jaque.expression.ConstantExpression;
@@ -8,26 +8,25 @@ import com.trigersoft.jaque.expression.LambdaExpression;
 import com.trigersoft.jaque.expression.MemberExpression;
 import com.trigersoft.jaque.expression.ParameterExpression;
 import com.trigersoft.jaque.expression.UnaryExpression;
+import eu.inginea.lambdacriteria.base.QueryExpressionVisitor;
+import eu.inginea.lambdacriteria.base.QueryExpressionVisitor;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * Decorates LambdaVisitor with logging messages 
+ * Decorates expression visitor with logging messages 
  * @author ondro
  */
-public class LoggingLambdaVisitor extends LambdaVisitor {
+class LoggingExpressionVisitor extends QueryExpressionVisitor {
     private final boolean logOnlyParsed = false;
     private boolean lastLoggedParsed = false;
+    private int level = 0;
 
     private Consumer<String> logger = System.out::println;
 
-    public LoggingLambdaVisitor() {
+    public LoggingExpressionVisitor() {
     } 
-
-    LoggingLambdaVisitor(StreamOperation op) {
-        super(op);
-    }
 
     @Override
     public Expression visit(UnaryExpression e) {
@@ -98,7 +97,6 @@ public class LoggingLambdaVisitor extends LambdaVisitor {
         logger.accept(prefix + msg);
     }
 
-    @Override
     protected void infoParsed(Object loggedValue) {
         info(loggedValue);
     }

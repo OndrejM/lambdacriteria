@@ -7,22 +7,20 @@ import static java.util.stream.Collectors.toList;
 import java.util.stream.IntStream;
 
 public class RuleEngine {
+
     private final Deque<Object> expressionBuffer = new LinkedList<>();
     private final Map<List<Class<?>>, Function<List<?>, ?>> rules = new HashMap<>();
-    
+
     public void addRule(List<Class<?>> literalTypes, Function<List<?>, ?> action) {
         rules.put(literalTypes, action);
     }
-    
+
     public <LITERAL_TYPE> void addRule(Class<LITERAL_TYPE> literalType, Function<LITERAL_TYPE, ?> action) {
-        rules.put(asList(literalType), new Function<List<?>, Object>() {
-            @Override
-            public Object apply(List<?> l) {
-                return action.apply((LITERAL_TYPE)l.get(0));
-            }
+        rules.put(asList(literalType), (Function<List<?>, Object>) (List<?> l) -> {
+            return action.apply((LITERAL_TYPE) l.get(0));
         });
     }
-    
+
     public void addTerm(Object term) {
         expressionBuffer.add(term);
         if (!matchSomeRule()) {
@@ -33,7 +31,7 @@ public class RuleEngine {
             matchSomeRule();
         }
     }
-    
+
     public Object getExpression() {
         while (matchSomeRule()) {
         }
@@ -42,7 +40,7 @@ public class RuleEngine {
         }
         return expressionBuffer.getFirst();
     }
-    
+
     private boolean matchSomeRule() {
         boolean ruleMatches = false;
         List<Class<?>> expTypesList = new LinkedList<>();
@@ -77,5 +75,4 @@ public class RuleEngine {
         }
     }
 
-    
 }

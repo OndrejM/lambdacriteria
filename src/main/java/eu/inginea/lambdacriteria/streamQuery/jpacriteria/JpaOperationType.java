@@ -1,4 +1,4 @@
-package eu.inginea.lambdacriteria.base;
+package eu.inginea.lambdacriteria.streamQuery.jpacriteria;
 
 import com.trigersoft.jaque.expression.ExpressionType;
 import java.util.HashMap;

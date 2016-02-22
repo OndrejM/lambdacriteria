@@ -7,14 +7,12 @@ import eu.inginea.lambdacriteria.streamQuery.api.QueryStream;
 import eu.inginea.lambdacriteria.streamQuery.QueryTransformer;
 import eu.inginea.lambdacriteria.streamQuery.StreamOperation;
 import eu.inginea.lambdacriteria.streamQuery.TokenHandler;
-import eu.inginea.lambdacriteria.streamQuery.jpacriteria.JPACriteriaFilterHandler;
-import eu.inginea.lambdacriteria.streamQuery.loggingtransfromer.LoggingTransformer;
 import java.util.stream.Stream;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.*;
 
 // TODO generalize to use any grammar, not depend on entity manager
-public class JPAStreamQuery<ROOT_ENTITY> {
+public class JPAStreamQuery {
 
     private final EntityManager em;
 
@@ -22,19 +20,19 @@ public class JPAStreamQuery<ROOT_ENTITY> {
         this.em = em;
     }
 
-    public QueryStream<ROOT_ENTITY> from(Class<ROOT_ENTITY> aClass) {
+    public <ROOT_ENTITY> QueryStream<ROOT_ENTITY> from(Class<ROOT_ENTITY> aClass) {
         String entityName = em.getMetamodel().entity(aClass).getName();
         return new LambdaTransformingStream<>(new JPATransformer<ROOT_ENTITY>(aClass, em));
     }
     
     private static class JPATransformer<ROOT_ENTITY> implements QueryTransformer<ROOT_ENTITY> {
-        private LoggingTransformer loggingTransformer = new LoggingTransformer();
+        private QueryMapping expressionMapping = new FilterExpressionMapping();
         private Class<ROOT_ENTITY> rootClass;
         private EntityManager em;
         private CriteriaBuilder cb;
         private CriteriaQuery<ROOT_ENTITY> q;
-        private final Root rootPath;
-        private JPACriteriaFilterHandler filterHandler;
+        private final Root<ROOT_ENTITY> rootPath;
+        private JPACriteriaFilterHandler<ROOT_ENTITY> filterHandler;
 
         public JPATransformer(Class<ROOT_ENTITY> rootClass, EntityManager em) {
             this.rootClass = rootClass;
@@ -52,12 +50,12 @@ public class JPAStreamQuery<ROOT_ENTITY> {
         @Override
         public QueryMapping supplyMapping() {
                 // TODO put mapping to JPA specific class, or generalize
-            return loggingTransformer;
+            return expressionMapping;
         }
 
         @Override
         public TokenHandler supplyQueryVisitor() {
-            filterHandler = new JPACriteriaFilterHandler(rootPath, cb, q);
+            filterHandler = new JPACriteriaFilterHandler<>(rootPath, cb, q);
             return filterHandler;
         }
 

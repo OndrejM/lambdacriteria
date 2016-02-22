@@ -12,6 +12,7 @@ import integration.jpa.model.Person;
 import static integration.jpa.entitybuilders.AddressBuilder.anAddress;
 import static integration.jpa.entitybuilders.LifeEventBuilder.*;
 import static integration.jpa.entitybuilders.PersonBuilder.aPerson;
+import java.util.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
@@ -136,7 +137,7 @@ public class QueryWithLambdasBase extends JPATestBase {
     }
 
     protected List<Person> getAllPersons() {
-        return getEM().createQuery("select p from Person p", Person.class).getResultList();
+        return new ArrayList<>(getEM().createQuery("select p from Person p", Person.class).getResultList()) ;
     }
 
 }

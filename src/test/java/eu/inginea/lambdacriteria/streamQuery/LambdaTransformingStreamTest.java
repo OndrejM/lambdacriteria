@@ -1,7 +1,7 @@
 package eu.inginea.lambdacriteria.streamQuery;
 
 import eu.inginea.lambdacriteria.streamQuery.api.QueryStream;
-import eu.inginea.lambdacriteria.streamQuery.loggingtransfromer.LoggingTransformer;
+import eu.inginea.lambdacriteria.streamQuery.jpacriteria.LoggingTransformer;
 import eu.inginea.lambdacriteria.streamQuery.ruleengine.*;
 import java.util.*;
 import java.util.stream.*;

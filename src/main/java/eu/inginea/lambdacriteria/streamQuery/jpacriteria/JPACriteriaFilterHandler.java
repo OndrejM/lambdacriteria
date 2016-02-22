@@ -1,6 +1,5 @@
 package eu.inginea.lambdacriteria.streamQuery.jpacriteria;
 
-import eu.inginea.lambdacriteria.base.JpaOperationType;
 import eu.inginea.lambdacriteria.streamQuery.ruleengine.Path;
 import eu.inginea.lambdacriteria.streamQuery.ruleengine.*;
 import static java.util.Arrays.asList;
@@ -14,7 +13,7 @@ class JPACriteriaFilterHandler<ROOT_ENTITY> implements TokenHandler {
     private final RuleEngine engine = new RuleEngine();
     private javax.persistence.criteria.Path<?> rootPath;
     private CriteriaBuilder cb;
-    private CriteriaQuery q;
+    private CriteriaQuery<ROOT_ENTITY> q;
 
     {
         engine.addRule(Constant.class, this::constantToExpression);
@@ -23,7 +22,7 @@ class JPACriteriaFilterHandler<ROOT_ENTITY> implements TokenHandler {
         engine.addRule(asList(javax.persistence.criteria.Path.class, Path.class), this::concatenatePath);
     }
 
-    public JPACriteriaFilterHandler(javax.persistence.criteria.Path<ROOT_ENTITY> rootPath, CriteriaBuilder cb, CriteriaQuery q) {
+    public JPACriteriaFilterHandler(javax.persistence.criteria.Path<ROOT_ENTITY> rootPath, CriteriaBuilder cb, CriteriaQuery<ROOT_ENTITY> q) {
         this.rootPath = rootPath;
         this.cb = cb;
         this.q = q;
@@ -51,12 +50,12 @@ class JPACriteriaFilterHandler<ROOT_ENTITY> implements TokenHandler {
         int i = 0;
         Object left = expList.get(i++);
         Path pathLiteral = (Path) expList.get(i++);
-        
+
         javax.persistence.criteria.Path<?> jpaPath = null;
         if (left instanceof Parameter) {
             jpaPath = rootPath;
         } else if (left instanceof javax.persistence.criteria.Path) {
-            jpaPath = (javax.persistence.criteria.Path)left;
+            jpaPath = (javax.persistence.criteria.Path) left;
         }
 
         return jpaPath.get(pathLiteral.getPath());
@@ -67,8 +66,13 @@ class JPACriteriaFilterHandler<ROOT_ENTITY> implements TokenHandler {
         engine.addTerm(literal);
     }
 
-    public Expression<?> getCriteriaQuery() {
-        return (Expression) engine.getExpression();
+    public Expression<Boolean> getCriteriaQuery() {
+        Expression expr = (Expression) engine.getExpression();
+        if (!Boolean.class.equals(expr.getJavaType())) {
+            throw new IllegalStateException("The final expression for filter must be of Boolean type, it is of type "
+                    + expr.getJavaType().getSimpleName() + " instead.");
+        }
+        return expr;
     }
 
     private static class StubExpression implements Expression {
