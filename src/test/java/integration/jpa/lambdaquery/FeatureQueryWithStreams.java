@@ -1,8 +1,8 @@
 package integration.jpa.lambdaquery;
 
-import eu.inginea.lambdacriteria.streamQuery.jpacriteria.JPAStreamQuery;
-import eu.inginea.lambdacriteria.streamQuery.api.QueryStream;
-import eu.inginea.lambdacriteria.streamQuery.memory.InMemoryStreamQuery;
+import eu.inginea.lambdaquery.jpacriteria.JPAStreamQuery;
+import eu.inginea.lambdaquery.QueryStream;
+import eu.inginea.lambdaquery.memory.InMemoryStreamQuery;
 import java.util.List;
 import java.util.stream.Collectors;
 import integration.jpa.model.Person;

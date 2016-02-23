@@ -1,8 +1,6 @@
 package unit.lambdaparsing;
 
-import eu.inginea.lambdacriteria.base.QueryExpressionVisitor;
 import com.trigersoft.jaque.expression.LambdaExpression;
-import eu.inginea.lambdacriteria.streamQuery.*;
 import java.io.Serializable;
 import integration.jpa.model.Person;
 import org.junit.Test;
