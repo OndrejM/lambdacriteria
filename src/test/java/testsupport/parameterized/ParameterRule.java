@@ -9,12 +9,16 @@ public class ParameterRule<PARAM_TYPE> implements TestRule {
 
     private final Iterable<PARAM_TYPE> parameters;
     private PARAM_TYPE currentParam;
+    Iterator<PARAM_TYPE> itParams;
 
     public ParameterRule(Iterable<PARAM_TYPE> parameters) {
         this.parameters = parameters;
     }
 
     public PARAM_TYPE getParameter() {
+        if (currentParam == null) {
+            currentParam = itParams.next();
+        }
         return currentParam;
     }
 
@@ -26,11 +30,11 @@ public class ParameterRule<PARAM_TYPE> implements TestRule {
             public void evaluate() throws Throwable {
 
                 List<Throwable> errors = new ArrayList<Throwable>();
-                Iterator<PARAM_TYPE> itParams = parameters.iterator();
+                itParams = parameters.iterator();
                 int index = 0;
 
                 while (itParams.hasNext()) {
-                    currentParam = itParams.next();
+                    currentParam = null;
                     try {
                         stmnt.evaluate();
                     } catch (Throwable ex) {
