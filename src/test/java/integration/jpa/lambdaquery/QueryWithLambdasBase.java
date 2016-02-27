@@ -56,14 +56,14 @@ public class QueryWithLambdasBase extends JPATestBase {
         List<Person> persons = getEM().createQuery("select p from Person p where p.name = :name", Person.class)
                 .setParameter("name", "Ondro")
                 .getResultList();
-        isValidPersonByName(persons, 1);
+        isListOfPersonsWithSize(persons, 1);
     }
 
     protected void canQueryPersonByCityUsingJPQL() {
         List<Person> persons = getEM().createQuery("select p from Person p join p.address a where a.city = :city", Person.class)
                 .setParameter("city", "Nitra")
                 .getResultList();
-        isValidPersonByName(persons, 1);
+        isListOfPersonsWithSize(persons, 1);
     }
 
     protected void canQueryPersonByNameUsingCriteria() {
@@ -74,10 +74,10 @@ public class QueryWithLambdasBase extends JPATestBase {
         List<Person> persons = getEM().createQuery(q)
                 .setParameter("name", "Ondro")
                 .getResultList();
-        isValidPersonByName(persons, 1);
+        isListOfPersonsWithSize(persons, 1);
     }
 
-    protected void isValidPersonByName(List<Person> persons, int size) {
+    protected void isListOfPersonsWithSize(List<Person> persons, int size) {
         assertThat("List of persons", persons, allOf(is(iterableWithSize(size)),
                 everyItem(is(instanceOf(Person.class)))
         ));
@@ -133,7 +133,14 @@ public class QueryWithLambdasBase extends JPATestBase {
     }
 
     protected void canQueryPersonWithLikeUsingCriteria() {
-        fail("TODO");
+        CriteriaBuilder cb = getEM().getCriteriaBuilder();
+        CriteriaQuery<Person> q = cb.createQuery(Person.class);
+        Root<Person> p = q.from(Person.class);
+        q.select(p).where(cb.like(p.get("address").get("city"), cb.parameter(String.class, "cityLike")));
+        List<Person> persons = getEM().createQuery(q)
+                .setParameter("cityLike", "%a%")
+                .getResultList();
+        isListOfPersonsWithSize(persons, 2);
     }
 
     protected void isValidPersonByNameGroupByLifeEventPlace(List<String> places) {

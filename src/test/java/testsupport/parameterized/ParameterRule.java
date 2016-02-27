@@ -33,6 +33,10 @@ public class ParameterRule<PARAM_TYPE> implements TestRule {
         this.parameters = parameters;
     }
 
+    public ParameterRule(PARAM_TYPE... parameters) {
+        this.parameters = Arrays.asList(parameters);
+    }
+
     public PARAM_TYPE getParameter() {
         if (!paramUsedInTest) {
             paramUsedInTest = true;

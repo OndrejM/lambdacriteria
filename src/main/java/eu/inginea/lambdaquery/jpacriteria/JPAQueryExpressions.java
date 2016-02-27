@@ -1,18 +1,18 @@
 package eu.inginea.lambdaquery.jpacriteria;
 
 import eu.inginea.lambdaquery.QueryExpressions;
+import eu.inginea.lambdaquery.jpacriteria.inmemorysupport.*;
 
 public interface JPAQueryExpressions extends QueryExpressions {
 
+    boolean like(String pattern);
+
     static boolean like(String value, String expr) {
-        // TODO implement proper JPA logic
-        return false;
+        return InMemoryFactory.getFunctions().like(value, expr);
     }
 
     static JPAQueryExpressions is(Object value) {
-        // TODO return in memory implementation
-        return null;
+        return InMemoryFactory.getExpressions(value);
     }
 
-    boolean like(String pattern);
 }

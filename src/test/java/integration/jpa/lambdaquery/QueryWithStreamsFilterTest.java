@@ -3,7 +3,6 @@ package integration.jpa.lambdaquery;
 import eu.inginea.lambdaquery.jpacriteria.JPAStreamQuery;
 import eu.inginea.lambdaquery.QueryStream;
 import eu.inginea.lambdaquery.jpacriteria.*;
-import static eu.inginea.lambdaquery.jpacriteria.JPAQueryExpressions.like;
 import eu.inginea.lambdaquery.memory.InMemoryStreamQuery;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,6 +12,7 @@ import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import org.junit.*;
 import testsupport.parameterized.*;
+import static eu.inginea.lambdaquery.jpacriteria.JPAQueryExpressions.like;
 
 /**
  * <p>
@@ -30,6 +30,7 @@ import testsupport.parameterized.*;
  */
 public class QueryWithStreamsFilterTest extends QueryWithLambdasBase {
 
+    private static final String LIST_OF_PERSONS_MATCHING_CRITERIA = "List of persons matching criteria";
     List<Person> allPersons = null;
     List<Person> persons = null;
 
@@ -66,8 +67,8 @@ public class QueryWithStreamsFilterTest extends QueryWithLambdasBase {
                     .collect(Collectors.toList());
         });
         then(() -> {
-            assertThat("List of persons matching criteria", persons, is(not(empty())));
-            assertThat("List of persons matching criteria", persons, is(iterableWithSize(1)));
+            assertThat(LIST_OF_PERSONS_MATCHING_CRITERIA, persons, is(not(empty())));
+            assertThat(LIST_OF_PERSONS_MATCHING_CRITERIA, persons, is(iterableWithSize(1)));
         });
     }
 
@@ -86,8 +87,8 @@ public class QueryWithStreamsFilterTest extends QueryWithLambdasBase {
                     .collect(Collectors.toList());
         });
         then(() -> {
-            assertThat("List of persons matching criteria", persons, is(not(empty())));
-            assertThat("List of persons matching criteria", persons, is(iterableWithSize(1)));
+            assertThat(LIST_OF_PERSONS_MATCHING_CRITERIA, persons, is(not(empty())));
+            assertThat(LIST_OF_PERSONS_MATCHING_CRITERIA, persons, is(iterableWithSize(1)));
         });
     }
 
@@ -106,8 +107,8 @@ public class QueryWithStreamsFilterTest extends QueryWithLambdasBase {
                     .collect(Collectors.toList());
         });
         then(() -> {
-            assertThat("List of persons matching criteria", persons, is(not(empty())));
-            assertThat("List of persons matching criteria", persons, is(iterableWithSize(2)));
+            assertThat(LIST_OF_PERSONS_MATCHING_CRITERIA, persons, is(not(empty())));
+            assertThat(LIST_OF_PERSONS_MATCHING_CRITERIA, persons, is(iterableWithSize(2)));
         });
     }
 
@@ -120,8 +121,8 @@ public class QueryWithStreamsFilterTest extends QueryWithLambdasBase {
                     .collect(Collectors.toList());
         });
         then(() -> {
-            assertThat("List of persons matching criteria", persons, is(not(empty())));
-            assertThat("List of persons matching criteria", persons, is(iterableWithSize(2)));
+            assertThat(LIST_OF_PERSONS_MATCHING_CRITERIA, persons, is(not(empty())));
+            assertThat(LIST_OF_PERSONS_MATCHING_CRITERIA, persons, is(iterableWithSize(2)));
         });
     }
 
