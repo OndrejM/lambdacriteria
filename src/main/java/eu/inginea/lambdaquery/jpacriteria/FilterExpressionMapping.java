@@ -3,6 +3,8 @@ package eu.inginea.lambdaquery.jpacriteria;
 import com.trigersoft.jaque.expression.ExpressionType;
 import eu.inginea.lambdaquery.base.QueryMapping;
 import eu.inginea.lambdaquery.ruleengine.*;
+import static eu.inginea.lambdaquery.ruleengine.BinaryOperation.*;
+import static eu.inginea.lambdaquery.ruleengine.InfixBinaryOperation.*;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -11,9 +13,9 @@ class FilterExpressionMapping implements QueryMapping {
     private final Collection<LiteralMapper> literalMappers = new ArrayList<>();
     
     {
-        BinaryOperation opEqual = BinaryOperation.EQUAL;
-        addLiteralsMapping(opEqual, ExpressionType.Equal);
-        addLiteralMapper(new MethodLiteral(opEqual, "equals", Object.class));
+        addLiteralsMapping(EQUAL, ExpressionType.Equal);
+        addLiteralMapper(new MethodLiteral(EQUAL, "equals", Object.class));
+        addLiteralMapper(new MethodLiteral(LIKE, "like", String.class, String.class));
     }
 
     @Override

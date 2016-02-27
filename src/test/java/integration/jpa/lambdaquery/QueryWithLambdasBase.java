@@ -132,12 +132,16 @@ public class QueryWithLambdasBase extends JPATestBase {
         isValidPersonByNameGroupByHairColor(places);
     }
 
+    protected void canQueryPersonWithLikeUsingCriteria() {
+        fail("TODO");
+    }
+
     protected void isValidPersonByNameGroupByLifeEventPlace(List<String> places) {
         assertThat("List of places matching criteria", places, is(iterableWithSize(1)));
     }
 
     protected List<Person> getAllPersons() {
-        return new ArrayList<>(getEM().createQuery("select p from Person p", Person.class).getResultList()) ;
+        return new ArrayList<>(getEM().createQuery("select p from Person p", Person.class).getResultList());
     }
 
 }

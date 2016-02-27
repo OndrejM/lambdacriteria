@@ -2,6 +2,7 @@ package integration.jpa.lambdaquery;
 
 import eu.inginea.lambdaquery.jpacriteria.JPAStreamQuery;
 import eu.inginea.lambdaquery.QueryStream;
+import static eu.inginea.lambdaquery.jpacriteria.JPAQueryExpressions.like;
 import eu.inginea.lambdaquery.memory.InMemoryStreamQuery;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -90,7 +91,23 @@ public class QueryWithStreamsFilterTest extends QueryWithLambdasBase {
     }
 
     @Test
+    @Override
+    public void canQueryPersonWithLikeUsingCriteria() {
+        super.canQueryPersonWithLikeUsingCriteria();
+    }
+    
+    @Test
     public void canQueryPersonWithLikeUsingStream() {
+        QueryStream<Person> stream = personStreams.getParameter();
+        when(() -> {
+            persons = stream
+                    .filter(p -> like(p.getAddress().getCity(), "%a%"))
+                    .collect(Collectors.toList());
+        });
+        then(() -> {
+            assertThat("List of persons matching criteria", persons, is(not(empty())));
+            assertThat("List of persons matching criteria", persons, is(iterableWithSize(2)));
+        });
     }
 
     private QueryStream<Person> aPersonInMemoryStream() {

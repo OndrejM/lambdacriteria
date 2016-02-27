@@ -36,7 +36,7 @@ public class RuleEngine {
         while (matchSomeRule()) {
         }
         if (expressionBuffer.size() > 1) {
-            throw new IllegalStateException("There should be exactly on expression in buffer");
+            throw new IllegalStateException("There should be exactly one expression in buffer");
         }
         return expressionBuffer.getFirst();
     }
