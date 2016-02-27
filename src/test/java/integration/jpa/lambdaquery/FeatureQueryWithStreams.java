@@ -142,7 +142,7 @@ public class FeatureQueryWithStreams extends QueryWithLambdasBase {
                     // to QueryStream insteda of stream, as lambdas in filter must be serializable
                     .join((p, util) -> {
                         return util.toStream(p.getLifeEventList())
-                                .filter(le -> le.getPlace() == p.getAddress().getCity())
+                                .filter(le -> le.getPlace().equals(p.getAddress().getCity()))
                                 .select();
                     })
                     // choose selected values and collect - only necessary if we want to have more than single entity in result
@@ -153,6 +153,10 @@ public class FeatureQueryWithStreams extends QueryWithLambdasBase {
         });
     }
 
+    /**
+     * Example of API to handle all possible JPA query options, which make sense
+     * in single query with aggregation
+     */
     @Test
     public void canParseVeryComplexQueryWithAggregation() {
         when(() -> {
@@ -164,7 +168,7 @@ public class FeatureQueryWithStreams extends QueryWithLambdasBase {
                     // to QueryStream insteda of stream, as lambdas in filter must be serializable
                     .join((p, util) -> {
                         return util.toStream(p.getLifeEventList())
-                                .filter(le -> le.getPlace() == p.getAddress().getCity())
+                                .filter(le -> le.getPlace().equals(p.getAddress().getCity()))
                                 .select();
                     })
                     // choose selected values and collect - only necessary if we want to have more than single entity in result
