@@ -2,27 +2,26 @@ package eu.inginea.lambdaquery.ruleengine;
 
 import com.trigersoft.jaque.expression.ExpressionType;
 
-public enum BinaryOperation implements Literal {
+public enum UnaryOperation implements Literal {
 
-    EQUAL(ExpressionType.Equal),
-    LIKE;
-    
+    IS;
+
     private int exprType;
     private String operationWithoutExpression = null;
 
-    private BinaryOperation(int operation) {
+    private UnaryOperation(int operation) {
         this.exprType = operation;
     }
 
-    private BinaryOperation() {
+    private UnaryOperation() {
         this.operationWithoutExpression = this.getClass().getSimpleName() + "." + this.name();
     }
 
     @Override
     public String toString() {
-        return operationWithoutExpression != null 
-                ? operationWithoutExpression 
+        return operationWithoutExpression != null
+                ? operationWithoutExpression
                 : ExpressionType.toString(exprType);
     }
-    
+
 }

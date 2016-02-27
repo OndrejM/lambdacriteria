@@ -20,6 +20,7 @@ class JPACriteriaFilterHandler<ROOT_ENTITY> implements TokenHandler {
         engine.addRule(Constant.class, this::constantToExpression);
         engine.addRule(asList(Expression.class, BinaryOperation.class, Expression.class), this::binaryOperation);
         engine.addRule(asList(InfixBinaryOperation.class, Expression.class, Expression.class), this::infixBinaryOperation);
+        engine.addRule(asList(UnaryOperation.class, Expression.class), this::unaryOperation);
         engine.addRule(asList(Parameter.class, Path.class), this::concatenatePath);
         engine.addRule(asList(javax.persistence.criteria.Path.class, Path.class), this::concatenatePath);
     }
@@ -43,6 +44,8 @@ class JPACriteriaFilterHandler<ROOT_ENTITY> implements TokenHandler {
         switch (op) {
             case EQUAL:
                 return cb.equal(expLeft, expRight);
+            case LIKE:
+                return cb.like(expLeft, expRight);
             default:
                 throw new UnsupportedOperationException("" + op);
         }
@@ -62,6 +65,19 @@ class JPACriteriaFilterHandler<ROOT_ENTITY> implements TokenHandler {
         }
     }
 
+    public Expression unaryOperation(List<?> expList) {
+        int i = 0;
+        UnaryOperation op = (UnaryOperation) expList.get(i++);
+        Expression exp = (Expression) expList.get(i++);
+
+        switch (op) {
+            case IS:
+                return exp; // ignore is, as it is only syntactic filler
+            default:
+                throw new UnsupportedOperationException("" + op);
+        }
+    }
+    
     public Expression concatenatePath(List<?> expList) {
         int i = 0;
         Object left = expList.get(i++);

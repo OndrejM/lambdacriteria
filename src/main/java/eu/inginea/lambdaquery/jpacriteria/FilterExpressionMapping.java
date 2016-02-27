@@ -5,6 +5,7 @@ import eu.inginea.lambdaquery.base.QueryMapping;
 import eu.inginea.lambdaquery.ruleengine.*;
 import static eu.inginea.lambdaquery.ruleengine.BinaryOperation.*;
 import static eu.inginea.lambdaquery.ruleengine.InfixBinaryOperation.*;
+import static eu.inginea.lambdaquery.ruleengine.UnaryOperation.*;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -15,7 +16,9 @@ class FilterExpressionMapping implements QueryMapping {
     {
         addLiteralsMapping(EQUAL, ExpressionType.Equal);
         addLiteralMapper(new MethodLiteral(EQUAL, "equals", Object.class));
-        addLiteralMapper(new MethodLiteral(LIKE, "like", String.class, String.class));
+        addLiteralMapper(new MethodLiteral(InfixBinaryOperation.LIKE, "like", String.class, String.class));
+        addLiteralMapper(new MethodLiteral(IS, "is", Object.class));
+        addLiteralMapper(new MethodLiteral(BinaryOperation.LIKE, "like", String.class));
     }
 
     @Override

@@ -9,4 +9,10 @@ public interface JPAQueryExpressions extends QueryExpressions {
         return false;
     }
 
+    static JPAQueryExpressions is(Object value) {
+        // TODO return in memory implementation
+        return null;
+    }
+
+    boolean like(String pattern);
 }
