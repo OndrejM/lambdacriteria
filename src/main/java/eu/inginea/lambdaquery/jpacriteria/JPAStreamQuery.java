@@ -59,6 +59,7 @@ public class JPAStreamQuery {
             return filterHandler;
         }
 
+        // TODO allow paging by some configuration to get results lazily page after page, maybe using cursor
         @Override
         public Stream<ROOT_ENTITY> getResults() {
             if (filterHandler != null) {

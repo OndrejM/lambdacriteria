@@ -99,7 +99,7 @@ public class QueryWithStreamsDesignConceptsTest extends QueryWithLambdasBase {
                     .select() // add person entity to select clause
                     .distinct(p -> p.getAddress()) // group by address -> select persons and their distinct addresses
                     // join with filter and select on joined entity. Probably will need custom conversion 
-                    // to QueryStream insteda of stream, as lambdas in filter must be serializable
+                    // to QueryStream instead of stream, as lambdas in filter must be serializable
                     .join((p, util) -> {
                         return util.toStream(p.getLifeEventList())
                                 .filter(le -> le.getPlace().equals(p.getAddress().getCity()))

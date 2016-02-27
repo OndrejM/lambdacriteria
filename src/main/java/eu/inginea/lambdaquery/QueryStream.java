@@ -21,6 +21,10 @@ public interface QueryStream<T> {
         return null;
     }
 
+    default QueryStream<T> grouped(Function<T, ?> selector) {
+        return null;
+    }
+
     default QueryStream<T> distinct() {
         return null;
     }
@@ -33,7 +37,9 @@ public interface QueryStream<T> {
         return null;
     }
 
-    // changes to normal stream of objects supplied by the underlying query, it is a terminal operation resulting into in-memory stream
+    /** Changes to normal stream of objects supplied by the underlying query. 
+     * It is a terminal operation resulting into in-memory stream
+    */
     default Stream<List<?>> mapToSelection() {
         return null;
     }
