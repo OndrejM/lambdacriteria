@@ -9,19 +9,33 @@ import integration.jpa.model.Person;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import org.junit.Before;
+import org.junit.*;
+import testsupport.parameterized.*;
 
 /**
  * <p>
- * Tests for queries with filter 
+ * Tests for queries with filter
  * <p>
  * Stream-like API should be translatable to JPA Criteria (or SQL) and also
  * should be executable on in-memory data
+ * <p>
+ * TODO:
+ * <ul>
+ * <li>greater, less than operators</li>
+ * <li>special SQL functions as LIKE etc.</li>
+ * <li>boolean opearations (AND, OR, NOT)</li>
+ * </ul>
  */
 public class QueryWithStreamsFilterTest extends QueryWithLambdasBase {
 
     List<Person> allPersons = null;
     List<Person> persons = null;
+
+    @Rule
+    public ParameterRule<QueryStream<Person>> personStreams = new ParameterRule<>(ProducingIterable.from(
+            this::aPersonJPAStream,
+            this::aPersonInMemoryStream)
+    );
 
     @Before
     @Override
@@ -42,20 +56,8 @@ public class QueryWithStreamsFilterTest extends QueryWithLambdasBase {
     }
 
     @Test
-    public void canQueryPersonByNameUsingJPAStream() {
-        canQueryPersonByNameUsingSuppliedStream(aPersonJPAStream());
-    }
-
-    @Test
-    public void canQueryPersonByNameUsingStreamInMemory() {
-        canQueryPersonByNameUsingSuppliedStream(aPersonInMemoryStream());
-    }
-
-    private QueryStream<Person> aPersonInMemoryStream() {
-        return new InMemoryStreamQuery().from(getAllPersons().stream());
-    }
-
-    private void canQueryPersonByNameUsingSuppliedStream(QueryStream<Person> stream) {
+    public void canQueryPersonByNameUsingStream() {
+        QueryStream<Person> stream = personStreams.getParameter();
         when(() -> {
             persons = stream
                     .filter(p -> "Ondro".equals(p.getName()))
@@ -74,20 +76,8 @@ public class QueryWithStreamsFilterTest extends QueryWithLambdasBase {
     }
 
     @Test
-    public void canQueryPersonByCityUsingJPAStream() {
-        canQueryPersonByCityUsingSuppliedStream(aPersonJPAStream());
-    }
-
-    private QueryStream<Person> aPersonJPAStream() {
-        return new JPAStreamQuery(getEM()).from(Person.class);
-    }
-
-    @Test
-    public void canQueryPersonByCityUsingStreamInMemory() {
-        canQueryPersonByCityUsingSuppliedStream(aPersonInMemoryStream());
-    }
-
-    private void canQueryPersonByCityUsingSuppliedStream(QueryStream<Person> stream) {
+    public void canQueryPersonByCityUsingStream() {
+        QueryStream<Person> stream = personStreams.getParameter();
         when(() -> {
             persons = stream
                     .filter(p -> "Nitra".equals(p.getAddress().getCity()))
@@ -97,6 +87,18 @@ public class QueryWithStreamsFilterTest extends QueryWithLambdasBase {
             assertThat("List of persons matching criteria", persons, is(not(empty())));
             assertThat("List of persons matching criteria", persons, is(iterableWithSize(1)));
         });
+    }
+
+    @Test
+    public void canQueryPersonWithLikeUsingStream() {
+    }
+
+    private QueryStream<Person> aPersonInMemoryStream() {
+        return new InMemoryStreamQuery().from(getAllPersons().stream());
+    }
+
+    private QueryStream<Person> aPersonJPAStream() {
+        return new JPAStreamQuery(getEM()).from(Person.class);
     }
 
 }
