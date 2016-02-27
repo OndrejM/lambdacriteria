@@ -95,5 +95,25 @@
                 </plugins>
             </build>        
         </profile>
+        <profile>
+            <id>only-auto-tests</id>
+            <activation>
+                <!-- activates only when no specific test specified, possible to run no-auto tests manually -->
+                <property>
+                    <name>!test</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>2.19.1</version>
+                        <configuration>
+                            <excludedGroups>testsupport.categories.SkipAutoExecution</excludedGroups>
+                        </configuration>
+                    </plugin>                
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 </project>
