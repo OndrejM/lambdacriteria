@@ -6,6 +6,22 @@ import org.junit.rules.*;
 import org.junit.runner.Description;
 import org.junit.runners.model.*;
 
+/**
+ * JUnit rule to execute parameterized tests. To make a test parameterized, just
+ * call rule.getParameter() inside the test method. Test will be executed once
+ * for each parameter. Rule is triggered only for tests which use the parameter
+ * during their execution. When multiple parameter rules are used inside a
+ * single test, the test will be executed for every combination of values. For
+ * example usage, see ParameteriedRuleTest.
+ * <p>
+ * If parameters need to be created only after the test is started, provide
+ * supplier for each parameter using ProducingIterable.
+ * <p>
+ * If all parameterized executions succeed, jUnit will report only one test as
+ * passed. For each failing execution, there will be additional failed test in
+ * report.
+ * @param <PARAM_TYPE> Type of values passed as parameters via this rule
+ */
 public class ParameterRule<PARAM_TYPE> implements TestRule {
 
     private final Iterable<PARAM_TYPE> parameters;
